@@ -21,6 +21,7 @@ import { userType } from '../types/user.type';
 import WithdrawServices from '../services/withdraw.services';
 import PaymentServices from '../services/payment.services';
 import ContractServices from '../services/contract.services';
+import axios from 'axios';
 
 const rate_services = new RateServices();
 const user_services = new UserServices();
@@ -274,10 +275,19 @@ export default class AdminController {
     async delete_deposit(req: Request, res: Response, next: NextFunction) {
         try {
             const { idDeposit } = req.params;
-            const delete_success: any = await deposit_services.delete_deposit(
-                parseInt(`${idDeposit}`)
+            const change_to_cancel: any = await axios.put(
+                `${process.env.URL}/admin/handleDeposit/${idDeposit}`,
+                { status: DEPOSIT_STATUS.CANCELED }
             );
-            successCode(res, delete_success.message);
+            if (change_to_cancel?.data?.code == 0) {
+                const delete_success: any =
+                    await deposit_services.delete_deposit(
+                        parseInt(`${idDeposit}`)
+                    );
+                successCode(res, delete_success.message);
+            } else {
+                errCode2(next, `${change_to_cancel?.data}`);
+            }
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -345,10 +355,19 @@ export default class AdminController {
     async delete_withdraw(req: Request, res: Response, next: NextFunction) {
         try {
             const { idWithdraw } = req.params;
-            const delete_success: any = await withdraw_services.delete_withdraw(
-                parseInt(`${idWithdraw}`)
+            const change_to_cancel: any = await axios.put(
+                `${process.env.URL}/admin/handleWithdraw/${idWithdraw}`,
+                { status: WITHDRAW_STATUS.CANCELED }
             );
-            successCode(res, delete_success.message);
+            if (change_to_cancel?.data?.code == 0) {
+                const delete_success: any =
+                    await withdraw_services.delete_withdraw(
+                        parseInt(`${idWithdraw}`)
+                    );
+                successCode(res, delete_success.message);
+            } else {
+                errCode2(next, `${change_to_cancel?.data}`);
+            }
         } catch (error: any) {
             errCode1(next, error);
         }
