@@ -97,6 +97,24 @@ class DepositServices {
                 );
         });
     }
+
+    delete_deposit(id: number) {
+        return new Promise((resolve, reject) => {
+            Deposit.destroy({ where: { id: id } })
+                .then(() => {
+                    resolve({
+                        code: 0,
+                        message: `Delete deposit successfully with id = ${id}`
+                    });
+                })
+                .catch((err) =>
+                    reject({
+                        code: 1,
+                        message: `Failed in delete deposit with id = ${id}`
+                    })
+                );
+        });
+    }
 }
 
 export default DepositServices;

@@ -97,6 +97,24 @@ class WithdrawServices {
                 );
         });
     }
+
+    delete_withdraw(id: number) {
+        return new Promise((resolve, reject) => {
+            Withdraw.destroy({ where: { id: id } })
+                .then(() => {
+                    resolve({
+                        code: 0,
+                        message: `Delete withdraw successfully with id = ${id}`
+                    });
+                })
+                .catch((err) =>
+                    reject({
+                        code: 1,
+                        message: `Failed in delete withdraw with id = ${id}`
+                    })
+                );
+        });
+    }
 }
 
 export default WithdrawServices;

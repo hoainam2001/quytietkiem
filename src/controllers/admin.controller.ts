@@ -92,6 +92,22 @@ export default class AdminController {
         }
     }
 
+    // [GET] /admin/payment/:idPayment
+    async get_payment_by_id(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idPayment } = req.params;
+            const payment: any = await payment_services.find_payment_by_id(
+                parseInt(idPayment)
+            );
+            if (!payment?.data) {
+                throw Error(`Payment is not valid with id = ${idPayment}`);
+            }
+            dataCode(res, payment.data);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
     // [POST] /admin/addPayment
     async add_payment(req: Request, res: Response, next: NextFunction) {
         try {
@@ -144,6 +160,51 @@ export default class AdminController {
         }
     }
 
+    // [GET] /admin/user/:idUser
+    async get_user_by_id(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const user: any = await user_services.get_user_by_id(idUser);
+            if (!user?.data) {
+                throw Error(`User is not valid with id = ${idUser}`);
+            }
+            dataCode(res, user.data);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/updateUser/:idUser
+    async update_user(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const user: any = await user_services.get_user_by_id(idUser);
+
+            if (!user) {
+                throw Error(`user is not valid with id = ${idUser}`);
+            }
+
+            const updated: any = await user_services.update_user(
+                idUser,
+                req.body
+            );
+            successCode(res, updated);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [DELETE] /admin/deleteUser/:idUser
+    async delete_user(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const delete_success: any = user_services.delete_user(idUser);
+            successCode(res, delete_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
     // [GET] /admin/deposits
     async get_all_deposit(req: Request, res: Response, next: NextFunction) {
         try {
@@ -166,6 +227,22 @@ export default class AdminController {
                 total: result.length,
                 page: page
             });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/deposit/idDeposit
+    async get_deposit_by_id(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idDeposit } = req.params;
+            const deposit: any = await deposit_services.find_deposit_by_id(
+                parseInt(idDeposit)
+            );
+            if (!deposit.data) {
+                throw Error(`Deposit is not valid with id = ${idDeposit}`);
+            }
+            dataCode(res, deposit.data);
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -194,6 +271,88 @@ export default class AdminController {
     }
 
     // [DELETE] /admin/deleteDeposit/:idDeposit
+    async delete_deposit(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idDeposit } = req.params;
+            const delete_success: any = await deposit_services.delete_deposit(
+                parseInt(`${idDeposit}`)
+            );
+            successCode(res, delete_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/withdraws
+    async get_all_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = req.query?.page ? req.query?.page : '1';
+            const show = req.query?.show ? req.query?.show : '10';
+            const step: number = precisionRound(
+                (parseInt(`${page}`) - 1) * parseInt(`${show}`)
+            );
+
+            const withdraws: Array<any> = await withdraw_services
+                .get_all()
+                .then((withdraws: any) => withdraws.data);
+            if (!withdraws) {
+                throw Error(`No deposit`);
+            }
+            const result = withdraws.slice(step, step + parseInt(`${show}`));
+
+            dataCode(res, {
+                withdraws: result,
+                total: result.length,
+                page: page
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/withdraw/:idWithdraw
+    async get_withdraw_by_id(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idWithdraw } = req.params;
+            const withdraw: any = await withdraw_services
+                .find_withdraw_by_id(parseInt(idWithdraw))
+                .then((data: any) => data?.data);
+            if (!withdraw) {
+                throw Error(`Withdraw is not valid with id = ${idWithdraw}`);
+            }
+            dataCode(res, withdraw);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/updateWithdraw/:idWithdraw
+    async update_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idWithdraw } = req.params;
+            const updated_success: any =
+                await withdraw_services.update_withdraw(
+                    req.body,
+                    parseInt(idWithdraw)
+                );
+            successCode(res, updated_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [DELETE] /admin/deleteWithdraw/:idWithdraw
+    async delete_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idWithdraw } = req.params;
+            const delete_success: any = await withdraw_services.delete_withdraw(
+                parseInt(`${idWithdraw}`)
+            );
+            successCode(res, delete_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
 
     // ---------------------------- HANDLE_EVENT ----------------------------
 
