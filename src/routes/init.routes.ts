@@ -16,6 +16,10 @@ const initRoutes = (app: Express) => {
     app.use('/users', UserRouter);
     app.use('/admin', routerAdmin);
 
+    app.use('/', (req: Request, res: Response, next: NextFunction) => {
+        res.send('Welcome to api of quy tiet kiem');
+    });
+
     // error handle
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         if (err.code == 500) {

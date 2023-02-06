@@ -15,22 +15,26 @@ rule.tz = 'Asia/Bangkok';
 
 const contract_services = new ContractServices();
 const get_list_confirmed_contract = async () => {
-    const contracts: Array<any> = [];
-    const get_contracts = async () => {
-        try {
-            const contracts_find: Array<any> = await contract_services
-                .get_all_contract_by_status(CONTRACT_STATUS.CONFIRMED)
-                .then((result: any) => result?.data);
-            contracts_find.forEach((contract: any) => {
-                contracts.push(contract?.dataValues);
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    try {
+        const contracts: Array<any> = [];
+        const get_contracts = async () => {
+            try {
+                const contracts_find: Array<any> = await contract_services
+                    .get_all_contract_by_status(CONTRACT_STATUS.CONFIRMED)
+                    .then((result: any) => result?.data);
+                contracts_find.forEach((contract: any) => {
+                    contracts.push(contract?.dataValues);
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
-    await get_contracts();
-    return contracts;
+        await get_contracts();
+        return contracts;
+    } catch (error: any) {
+        logger.error(error.message);
+    }
 };
 
 const handle_update = (
@@ -87,10 +91,14 @@ const handle_add_and_update = async (contract: any) => {
 };
 
 const init_auto = async () => {
-    const list_contract = await get_list_confirmed_contract().then(
-        (value) => value
-    );
-    list_contract.forEach((contract) => handle_add_and_update(contract));
+    try {
+        const list_contract = await get_list_confirmed_contract().then(
+            (value) => value
+        );
+        list_contract?.forEach((contract) => handle_add_and_update(contract));
+    } catch (error) {
+        logger.error(error);
+    }
 };
 
 // setInterval(() => {
