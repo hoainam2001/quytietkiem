@@ -34,37 +34,36 @@ const cpUpload = upload.fields([
 ]);
 
 // [POST] /users/forgotPassword/:idUser
-router.post(
-    '/forgotPassword/:idUser',
-    verifyToken,
-    verifyPermission(['user']),
-    controller.forgot_password
-);
+router.post('/forgotPassword/:idUser', controller.forgot_password);
 // [GET] /users/otpForGot/:code
 router.get('/otpForGot/:code', controller.otp_verification_forgot_password);
 
 // [POST] /users/deposit/:idUser
-router.post('/deposit/:idUser', controller.deposit);
+router.post('/deposit/:idUser', verifyToken, controller.deposit);
 
 // [PUT] /users/additionImageDeposit/:idDeposit
-router.put('/additionImageDeposit/:idDeposit', controller.addition_image);
+router.put(
+    '/additionImageDeposit/:idDeposit',
+    verifyToken,
+    controller.addition_image
+);
 
 // [GET] /users/deposits/:idUser
-router.get('/deposits/:idUser', controller.get_all_deposit);
+router.get('/deposits/:idUser', verifyToken, controller.get_all_deposit);
 
 // [POST] /users/withdraw/:idUser
-router.post('/withdraw/:idUser', controller.withdraw);
+router.post('/withdraw/:idUser', verifyToken, controller.withdraw);
 
 // [GET] /users/enterOtpWithdraw/:code
 router.get('/enterOtpWithdraw/:code', controller.enter_otp_withdraw);
 
 // [GET] /users/withdraws/:idUser
-router.get('/withdraws/:idUser', controller.get_all_withdraw);
+router.get('/withdraws/:idUser', verifyToken, controller.get_all_withdraw);
 
 // [PUT] /users/addPayment/:idUser
-router.put('/addPayment/:idUser', controller.addPayment);
+router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
 
 // [POST] /users/addContract/:idUser
-router.post('/addContract/:idUser', controller.add_contract);
+router.post('/addContract/:idUser', verifyToken, controller.add_contract);
 
 export { router };
