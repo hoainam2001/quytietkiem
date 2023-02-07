@@ -4,3 +4,4 @@ build
 .env
 logs
 note.txt
+.DS_Store
