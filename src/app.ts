@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import moment = require('moment');
 
 // import crypto from 'crypto';
 dotenv.config();
@@ -27,9 +28,12 @@ import './databases/init.sequelize';
 import './utils/create_folder';
 import './utils/Sequelize.utils';
 import './utils/auto.contract.utils';
+import './bot/botTelegram';
 
 import { initRoutes } from './routes/init.routes';
 initRoutes(app);
+
+moment.locale('vi');
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

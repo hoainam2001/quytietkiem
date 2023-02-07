@@ -306,7 +306,7 @@ export default class AdminController {
                 .get_all()
                 .then((withdraws: any) => withdraws.data);
             if (!withdraws) {
-                throw Error(`No deposit`);
+                throw Error(`No withdraw`);
             }
             const result = withdraws.slice(step, step + parseInt(`${show}`));
 
@@ -363,6 +363,85 @@ export default class AdminController {
                 const delete_success: any =
                     await withdraw_services.delete_withdraw(
                         parseInt(`${idWithdraw}`)
+                    );
+                successCode(res, delete_success.message);
+            } else {
+                errCode2(next, `${change_to_cancel?.data}`);
+            }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/contracts
+    async get_all_contract(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = req.query?.page ? req.query?.page : '1';
+            const show = req.query?.show ? req.query?.show : '10';
+            const step: number = precisionRound(
+                (parseInt(`${page}`) - 1) * parseInt(`${show}`)
+            );
+            const contracts: Array<any> = await contract_services
+                .get_all_contract()
+                .then((contracts: any) => contracts.data);
+            if (!contracts) {
+                throw Error(`No contract`);
+            }
+            const result = contracts.slice(step, step + parseInt(`${show}`));
+
+            dataCode(res, {
+                contracts: result,
+                total: result.length,
+                page: page
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    //[GET] /admin/contract/:idContract
+    async get_contract_by_id(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idContract } = req.params;
+            const contract: any = await contract_services
+                .get_contract_by_id(parseInt(idContract))
+                .then((data: any) => data?.data);
+            if (!contract) {
+                throw Error(`contract is not valid with id = ${idContract}`);
+            }
+            dataCode(res, contract);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/contract/:idContract
+    async update_contract(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idContract } = req.params;
+            const updated_success: any =
+                await contract_services.update_contract(
+                    parseInt(idContract),
+                    req.body
+                );
+            successCode(res, updated_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [DELETE] /admin/contract/:idContract
+    async delete_contract(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idContract } = req.params;
+            const change_to_cancel: any = await axios.put(
+                `${process.env.URL}/admin/handleContract/${idContract}`,
+                { status: CONTRACT_STATUS.CANCELED }
+            );
+            if (change_to_cancel?.data?.code == 0) {
+                const delete_success: any =
+                    await contract_services.delete_contract_by_id(
+                        parseInt(`${idContract}`)
                     );
                 successCode(res, delete_success.message);
             } else {
@@ -655,7 +734,7 @@ export default class AdminController {
                 if (withdraw.status === WITHDRAW_STATUS.CONFIRMED) {
                     withdraw_services
                         .update_withdraw(
-                            { status: WITHDRAW_STATUS.COMPLETED, note: '' },
+                            { status: WITHDRAW_STATUS.COMPLETED },
                             parseInt(idWithdraw)
                         )
                         .then(async (withdrawAfterUpdate: any) => {

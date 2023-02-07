@@ -68,6 +68,18 @@ routerAdmin.put('/updateWithdraw/:idWithdraw', controller.update_withdraw);
 // [DELETE] /admin/deleteWithdraw/:idWithdraw
 routerAdmin.delete('/deleteWithdraw/:idWithdraw', controller.delete_withdraw);
 
+// [GET] /admin/contracts
+routerAdmin.get('/contracts', controller.get_all_contract);
+
+//[GET] /admin/contract/:idContract
+routerAdmin.get('/contract/:idContract', controller.get_contract_by_id);
+
+// [PUT] /admin/contract/:idContract
+routerAdmin.put('/contract/:idContract', controller.update_contract);
+
+// [DELETE] /admin/contract/:idContract
+routerAdmin.delete('/contract/:idContract', controller.delete_contract);
+
 /// ----------------------------------HANDLE ----------------------------------
 
 // [PUT] /admin/handleContract/:idContract

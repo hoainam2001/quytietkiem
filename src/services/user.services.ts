@@ -83,6 +83,25 @@ class UserServices {
         });
     }
 
+    get_user_by_email(email: string) {
+        return new Promise((resolve, reject) => {
+            User.findOne({ 'payment.email': email })
+                .then((user: any) => {
+                    resolve({
+                        code: 0,
+                        message: 'Get user by email successfully',
+                        data: user
+                    });
+                })
+                .catch((err) =>
+                    reject({
+                        code: 1,
+                        message: `Failed to get user by email. ${err.message}`
+                    })
+                );
+        });
+    }
+
     delete_user(id: string) {
         return new Promise((resolve, reject) => {
             User.findByIdAndDelete(id)

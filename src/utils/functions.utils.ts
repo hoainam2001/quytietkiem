@@ -81,6 +81,22 @@ const restoreImageFromBase64 = async (
     });
 };
 
+const formatUSD = (number: number) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+        // notation: 'compact', // compact, short, long - rút gọn
+        // compactDisplay: 'short'  ,
+    }).format(number);
+};
+
+const formatVND = (number: number) => {
+    return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+    }).format(number);
+};
+
 export {
     errCode1,
     errCode2,
@@ -89,5 +105,7 @@ export {
     saltBcrypt,
     precisionRound,
     mail,
-    restoreImageFromBase64
+    restoreImageFromBase64,
+    formatUSD,
+    formatVND
 };

@@ -25,6 +25,8 @@ import CONTRACT_TYPE from '../types/contract.type';
 import { CONTRACT_STATUS } from '../types/enum';
 import { userType } from '../types/user.type';
 import WITHDRAW_TYPE from '../types/withdraw.type';
+import BotTelegramServices from '../services/bot.services';
+import bot from '../databases/init.bot';
 
 const user_services = new UserServices();
 const otp_services = new OtpServices();
@@ -32,6 +34,7 @@ const deposit_services = new DepositServices();
 const withdraw_services = new WithdrawServices();
 const payment_services = new PaymentServices();
 const contract_services = new ContractServices();
+const bot_services = new BotTelegramServices();
 
 class UserController {
     // [POST] /users/otpForGot/:code
@@ -145,9 +148,9 @@ class UserController {
             const { idDeposit } = req.params;
             const { image, imageName } = req.body;
             const date = Date.now();
-            const deposit_find: any = await deposit_services.find_deposit_by_id(
-                parseInt(idDeposit)
-            );
+            const deposit_find: any = await deposit_services
+                .find_deposit_by_id(parseInt(idDeposit))
+                .then((result: any) => result?.data);
             if (!deposit_find) {
                 errCode2(next, 'Deposit is not valid');
             }
@@ -159,6 +162,21 @@ class UserController {
                 { statement: pathImageDeposit },
                 parseInt(idDeposit)
             );
+            const get_payment: any = await payment_services
+                .find_payment_by_id(parseInt(deposit_find?.paymentId))
+                .then((data: any) => data.data);
+            const user: any = await user_services
+                .get_user_by_id(deposit_find?.userId)
+                .then((result: any) => result?.data);
+            bot_services.send_message_add_deposit(
+                bot,
+                deposit_find,
+                get_payment,
+                user,
+                parseInt(`${process.env.CHATID_TELEGRAM_DEV}`),
+                `${process.env.URL_WEB}${pathImageDeposit}`
+            );
+            // console.log(`${process.env.URL_WEB}${pathImageDeposit}`);
             successCode(res, update_deposit.message);
         } catch (error: any) {
             errCode1(next, error);
