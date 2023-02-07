@@ -18,3 +18,6 @@ DB_USER=root<br />
 DB_HOST=0.0.0.0<br />
 DB_DRIVER=mysql<br />
 DB_PASSWORD=<br />
+BOT_TELEGRAM_TOKEN=</br>
+URL_WEB=</br>
+CHATID_TELEGRAM_DEV=</br>
