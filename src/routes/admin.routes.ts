@@ -26,12 +26,7 @@ routerAdmin.put(
 );
 
 // [DELETE] /admin/deleteRate/:idRate
-routerAdmin.delete(
-    '/deleteRate/:idRate',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.delete_rate
-);
+routerAdmin.delete('/deleteRate/:idRate', controller.delete_rate);
 
 // [GET] /admin/allUsers
 routerAdmin.get('/allUsers', controller.get_all_users);
@@ -40,12 +35,7 @@ routerAdmin.get('/allUsers', controller.get_all_users);
 routerAdmin.get('/user/:idUser', controller.get_user_by_id);
 
 // [PUT] /admin/updateUser/:idUser
-routerAdmin.put(
-    '/updateUser/:idUser',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.update_user
-);
+routerAdmin.put('/updateUser/:idUser', controller.update_user);
 
 // [DELETE] /admin/deleteUser/:idUser
 routerAdmin.delete('/deleteUser/:idUser', controller.delete_user);
@@ -57,28 +47,13 @@ routerAdmin.get('/getPayments', controller.get_all_payment);
 routerAdmin.get('/payment/:idPayment', controller.get_payment_by_id);
 
 // [POST] /admin/addPayment
-routerAdmin.post(
-    '/addPayment',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.add_payment
-);
+routerAdmin.post('/addPayment', controller.add_payment);
 
 // [PUT] /admin/updatePayment/:id
-routerAdmin.put(
-    '/updatePayment/:idPayment',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.update_payment
-);
+routerAdmin.put('/updatePayment/:idPayment', controller.update_payment);
 
 // [DELETE] /admin/deletePayment/:idPayment
-routerAdmin.delete(
-    '/deletePayment/:idPayment',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.delete_payment
-);
+routerAdmin.delete('/deletePayment/:idPayment', controller.delete_payment);
 
 // [GET] /admin/deposits
 routerAdmin.get('/deposits', controller.get_all_deposit);
@@ -87,20 +62,10 @@ routerAdmin.get('/deposits', controller.get_all_deposit);
 routerAdmin.get('/deposit/:idDeposit', controller.get_deposit_by_id);
 
 // [PUT] /admin/updateDeposit/:idDeposit
-routerAdmin.put(
-    '/updateDeposit/:idDeposit',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.update_deposit
-);
+routerAdmin.put('/updateDeposit/:idDeposit', controller.update_deposit);
 
 // [DELETE] /admin/deleteDeposit/:idDeposit
-routerAdmin.delete(
-    '/deleteDeposit/:idDeposit',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.delete_deposit
-);
+routerAdmin.delete('/deleteDeposit/:idDeposit', controller.delete_deposit);
 
 // [GET] /admin/withdraws
 routerAdmin.get('/withdraws', controller.get_all_withdraw);
@@ -109,20 +74,10 @@ routerAdmin.get('/withdraws', controller.get_all_withdraw);
 routerAdmin.get('/withdraw/:idWithdraw', controller.get_withdraw_by_id);
 
 // [PUT] /admin/updateWithdraw/:idWithdraw
-routerAdmin.put(
-    '/updateWithdraw/:idWithdraw',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.update_withdraw
-);
+routerAdmin.put('/updateWithdraw/:idWithdraw', controller.update_withdraw);
 
 // [DELETE] /admin/deleteWithdraw/:idWithdraw
-routerAdmin.delete(
-    '/deleteWithdraw/:idWithdraw',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.delete_withdraw
-);
+routerAdmin.delete('/deleteWithdraw/:idWithdraw', controller.delete_withdraw);
 
 // [GET] /admin/contracts
 routerAdmin.get('/contracts', controller.get_all_contract);
@@ -131,20 +86,10 @@ routerAdmin.get('/contracts', controller.get_all_contract);
 routerAdmin.get('/contract/:idContract', controller.get_contract_by_id);
 
 // [PUT] /admin/contract/:idContract
-routerAdmin.put(
-    '/contract/:idContract',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.update_contract
-);
+routerAdmin.put('/contract/:idContract', controller.update_contract);
 
 // [DELETE] /admin/contract/:idContract
-routerAdmin.delete(
-    '/contract/:idContract',
-    verifyToken,
-    verifyPermission(['admin']),
-    controller.delete_contract
-);
+routerAdmin.delete('/contract/:idContract', controller.delete_contract);
 
 /// ----------------------------------HANDLE ----------------------------------
 
