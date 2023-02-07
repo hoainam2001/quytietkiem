@@ -83,11 +83,11 @@ class AuthenticationController {
                 errCode2(next, 'Input is not enough in register');
             } else {
                 const userFindByEmail = await userModel.findOne({
-                    email: email
+                    'payment.email': email
                 });
                 if (!userFindByEmail) {
                     const userFindByUsername = await userModel.findOne({
-                        username: email
+                        'payment.username': email
                     });
                     if (!userFindByUsername) {
                         errCode2(
