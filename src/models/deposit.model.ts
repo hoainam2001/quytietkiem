@@ -16,7 +16,6 @@ const Deposit = sequelizeConnection.define(
         statement: DataTypes.STRING,
         note: DataTypes.STRING,
         amount: DataTypes.FLOAT,
-        amountVND: DataTypes.FLOAT,
         idPayment: DataTypes.INTEGER
     },
     {

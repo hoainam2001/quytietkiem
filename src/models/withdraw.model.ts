@@ -13,8 +13,7 @@ const Withdraw = sequelizeConnection.define(
         userId: DataTypes.STRING,
         status: DataTypes.ENUM('Pending', 'Confirmed', 'Completed', 'Canceled'),
         note: DataTypes.STRING,
-        amount: DataTypes.FLOAT,
-        amountVND: DataTypes.FLOAT
+        amount: DataTypes.FLOAT
     },
     {
         freezeTableName: true,

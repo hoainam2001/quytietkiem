@@ -3,6 +3,7 @@ import {
     dataCode,
     errCode1,
     errCode2,
+    formatVND,
     mail,
     precisionRound,
     successCode
@@ -782,6 +783,21 @@ export default class AdminController {
 
             if (status === CONTRACT_STATUS.CONFIRMED) {
                 if (contract.status === CONTRACT_STATUS.PENDING) {
+                    const balance_after = precisionRound(
+                        balance_user - parseFloat(contract.principal)
+                    );
+                    if (balance_after < 0) {
+                        throw Error(
+                            `Balance of user now is not enough for this contract with balance is ${formatVND(
+                                balance_user
+                            )} and contract is ${formatVND(contract.principal)}`
+                        );
+                    }
+                    const update_user: any = await user_services.update_user(
+                        user._id,
+                        { 'Wallet.balance': balance_after }
+                    );
+                    successCode(res, update_user.message);
                     const calculate_day: number =
                         contract.number_of_days_taken === 0
                             ? parseFloat(contract.number_of_days_taken) + 1
@@ -802,19 +818,10 @@ export default class AdminController {
                         number_of_days_taken: parseInt(`${calculate_day}`),
                         status: CONTRACT_STATUS.CONFIRMED
                     };
-
                     await contract_services.update_contract(
                         parseInt(contract.id),
                         input_update_contract
                     );
-                    const balance_after = precisionRound(
-                        balance_user - parseFloat(contract.principal)
-                    );
-                    const update_user: any = await user_services.update_user(
-                        user._id,
-                        { 'Wallet.balance': balance_after }
-                    );
-                    successCode(res, update_user.message);
                 } else {
                     errCode2(
                         next,

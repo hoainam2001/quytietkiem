@@ -56,10 +56,8 @@ export default class BotTelegramServices {
             // console.log(user);
             const message = `<b>Type: Withdraw</b>\n<b>Email: ${
                 user?.payment?.email
-            }</b>\n<b>Amount: ${formatUSD(
+            }</b>\n<b>Amount: ${formatVND(
                 parseInt(data?.amount)
-            )}</b>\n<b>Amount VND: ${formatVND(
-                parseInt(data?.amountVND)
             )}</b>\n<b>Bank Account receive:\n Bank: ${
                 payment?.dataValues?.bank_name
             }\n Name: ${payment?.dataValues?.account_name}\n Number Card: ${
@@ -88,10 +86,8 @@ export default class BotTelegramServices {
             // console.log(user);
             const message = `<b>Type: Deposit</b>\n<b>Email: ${
                 user?.payment?.email
-            }</b>\n<b>Amount: ${formatUSD(
+            }</b>\n<b>Amount: ${formatVND(
                 parseInt(data?.amount)
-            )}</b>\n<b>Amount VND: ${formatVND(
-                parseInt(data?.amountVND)
             )}</b>\n<b>Bank Account receive:\n Bank: ${
                 payment?.dataValues?.bank_name
             }\n Name: ${payment?.dataValues?.account_name}\n Number Card: ${
@@ -101,6 +97,35 @@ export default class BotTelegramServices {
             )}</b>\n\n <a href="${imageURL}"> </a>\n\n\n<b>/confirm_deposit_${
                 data?.id
             }</b>`;
+            // console.log(message);
+            bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
+        } catch (err: any) {
+            console.log(err);
+        }
+    }
+
+    send_message_add_withdraw(
+        bot: any,
+        data: any,
+        payment: any,
+        user: any,
+        chatId: number
+    ) {
+        try {
+            // console.log(data);
+            // console.log(payment);
+            // console.log(user);
+            const message = `<b>Type: Withdraw</b>\n<b>Email: ${
+                user?.payment?.email
+            }</b>\n<b>Amount: ${formatVND(
+                parseInt(data?.amount)
+            )}</b>\n<b>Bank Account receive:\n Bank: ${
+                payment?.dataValues?.bank_name
+            }\n Name: ${payment?.dataValues?.account_name}\n Number Card: ${
+                payment?.dataValues?.account_number
+            }</b>\n<b>Created At: ${moment(data?.createdAt).format(
+                'llll'
+            )}</b>\n\n<b>/confirm_withdraw_${data?.id}</b>`;
             // console.log(message);
             bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
         } catch (err: any) {

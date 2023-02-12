@@ -6,6 +6,7 @@ type CONTRACT_TYPE = {
     interest_rate: number;
     cycle: string;
     number_of_days_taken: number;
+    type: string;
 };
 
 export default CONTRACT_TYPE;

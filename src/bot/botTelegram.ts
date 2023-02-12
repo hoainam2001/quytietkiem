@@ -5,7 +5,7 @@ import PaymentServices from '../services/payment.services';
 import { UserServices } from '../services/user.services';
 import WithdrawServices from '../services/withdraw.services';
 import { DEPOSIT_STATUS, WITHDRAW_STATUS } from '../types/enum';
-import { formatUSD } from '../utils/functions.utils';
+import { formatUSD, formatVND } from '../utils/functions.utils';
 
 const bot_services = new BotTelegramServices();
 const user_services = new UserServices();
@@ -101,9 +101,9 @@ const confirm_deposit = async (chatId: number, idDeposit: string) => {
         const get_deposit: any = await axios
             .get(`${process.env.URL}/admin/deposit/${idDeposit}`)
             .then((result: any) => result?.data?.data);
-        const message = `<b>Confirm deposit successfully with amount = ${formatUSD(
+        const message = `<b>Confirm deposit successfully with amount = ${formatVND(
             parseInt(get_deposit?.amount)
-        )}</b>\n<b>Balance now: ${formatUSD(
+        )}</b>\n<b>Balance now: ${formatVND(
             parseInt(confirmed_deposit?.Wallet?.balance)
         )}</b>`;
         bot_services.send_message(bot, message.toUpperCase(), chatId);
@@ -123,7 +123,7 @@ const confirm_withdraw = async (chatId: number, idWithdraw: string) => {
         const get_withdraw: any = await axios
             .get(`${process.env.URL}/admin/withdraw/${idWithdraw}`)
             .then((result: any) => result?.data?.data);
-        const message = `<b>Confirm withdraw successfully with amount = ${formatUSD(
+        const message = `<b>Confirm withdraw successfully with amount = ${formatVND(
             parseInt(get_withdraw?.amount)
         )}</b>\n<b>Balance now: ${formatUSD(
             parseInt(confirm_withdraw?.Wallet?.balance)

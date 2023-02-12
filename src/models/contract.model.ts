@@ -15,7 +15,8 @@ const Contract = sequelizeConnection.define(
         principal: DataTypes.FLOAT,
         interest_rate: DataTypes.FLOAT,
         cycle: DataTypes.ENUM('30', '90', '180', '360', '540'),
-        number_of_days_taken: DataTypes.INTEGER
+        number_of_days_taken: DataTypes.INTEGER,
+        type: DataTypes.ENUM('USD', 'AGRICULTURE')
     },
     {
         freezeTableName: true,

@@ -3,6 +3,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import moment = require('moment');
+import helmet from 'helmet';
 
 // import crypto from 'crypto';
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(
     })
 );
 app.use(express.static('uploads'));
+app.use(helmet());
 
 // console.log(crypto.randomBytes(64).toString('hex'));
 

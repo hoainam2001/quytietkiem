@@ -22,7 +22,7 @@ import ContractServices from '../services/contract.services';
 import DEPOSIT_TYPE from '../types/deposit.type';
 import PAYMENT_TYPE from '../types/payment.type';
 import CONTRACT_TYPE from '../types/contract.type';
-import { CONTRACT_STATUS } from '../types/enum';
+import { CONTRACT_ENUM, CONTRACT_STATUS } from '../types/enum';
 import { userType } from '../types/user.type';
 import WITHDRAW_TYPE from '../types/withdraw.type';
 import BotTelegramServices from '../services/bot.services';
@@ -125,7 +125,6 @@ class UserController {
                 const data_input: DEPOSIT_TYPE = {
                     userId: idUser,
                     status: req.body.status,
-                    amountVND: parseFloat(req.body?.amountVND),
                     statement: '',
                     note: req.body?.note,
                     amount: parseFloat(req.body?.amount)
@@ -229,7 +228,6 @@ class UserController {
                         const withdraw_input: WITHDRAW_TYPE = {
                             userId: idUser,
                             status: req.body.status,
-                            amountVND: parseFloat(req.body?.amountVND),
                             note: req.body?.note,
                             amount: parseFloat(req.body?.amount)
                         };
@@ -302,8 +300,23 @@ class UserController {
                             status: 'Confirmed'
                         }
                     )
-                    .then((result) => {
+                    .then(async (result) => {
                         dataCode(res, result.data);
+                        const get_payment: any = await payment_services
+                            .find_payment_by_id(
+                                parseInt(withdraw?.data?.paymentId)
+                            )
+                            .then((data: any) => data.data);
+                        const user: any = await user_services
+                            .get_user_by_id(withdraw?.data?.userId)
+                            .then((result: any) => result?.data);
+                        bot_services.send_message_add_withdraw(
+                            bot,
+                            withdraw?.data,
+                            get_payment,
+                            user,
+                            parseInt(`${process.env.CHATID_TELEGRAM_DEV}`)
+                        );
                     })
                     .catch((err) => errCode1(next, err));
             } else {
@@ -365,14 +378,23 @@ class UserController {
     async add_contract(req: Request, res: Response, next: NextFunction) {
         try {
             const { idUser } = req.params;
+            if (
+                !(`${req.body?.type}` == CONTRACT_ENUM.USD) ||
+                !(`${req.body?.type}` != CONTRACT_ENUM.AGRICULTURE)
+            ) {
+                throw Error(
+                    `Type of contract true is ${CONTRACT_ENUM.USD} or ${CONTRACT_ENUM.AGRICULTURE}`
+                );
+            }
             const input_data: CONTRACT_TYPE = {
                 userId: idUser,
                 status: CONTRACT_STATUS.PENDING,
-                rate: parseFloat(req.body?.rate),
+                rate: 0.06,
                 principal: req.body?.principal.toString(),
                 interest_rate: 0,
                 cycle: req.body?.cycle.toString(),
-                number_of_days_taken: 0
+                number_of_days_taken: 0,
+                type: req.body?.type
             };
 
             contract_services
@@ -392,6 +414,40 @@ class UserController {
                         'Create a contract'
                     );
                     dataCode(res, contract);
+                })
+                .catch((err) => errCode1(next, err));
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /users/password/:idUser
+    async change_pwd(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const { password, new_password } = req.body;
+            const user = await user_services
+                .get_user_by_id(idUser)
+                .then((result: any) => result.data);
+            if (!user) {
+                throw Error(`User is  not valid with id = ${idUser}`);
+            }
+            bcrypt
+                .compare(password, user.payment.password)
+                .then(async (match) => {
+                    if (!match) {
+                        throw Error(`Password is not true`);
+                    }
+                    const hashed = await bcrypt.hash(new_password, saltBcrypt);
+                    const update_password: any =
+                        await user_services.update_user(idUser, {
+                            'payment.password': hashed
+                        });
+                    if (update_password.code === 0) {
+                        dataCode(res, { new_pass: new_password });
+                    } else {
+                        errCode2(next, update_password.message);
+                    }
                 })
                 .catch((err) => errCode1(next, err));
         } catch (error: any) {

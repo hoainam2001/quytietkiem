@@ -66,4 +66,7 @@ router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
 // [POST] /users/addContract/:idUser
 router.post('/addContract/:idUser', verifyToken, controller.add_contract);
 
+// [PUT] /users/password/:idUser
+router.put('/password/:idUser', verifyToken, controller.change_pwd);
+
 export { router };
