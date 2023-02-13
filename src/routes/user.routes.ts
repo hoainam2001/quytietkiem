@@ -33,8 +33,8 @@ const cpUpload = upload.fields([
     { name: 'licenseBeside', maxCount: 1 }
 ]);
 
-// [POST] /users/forgotPassword/:idUser
-router.post('/forgotPassword/:idUser', controller.forgot_password);
+// [POST] /users/forgotPassword/:email
+router.post('/forgotPassword/:email', controller.forgot_password);
 // [GET] /users/otpForGot/:code
 router.get('/otpForGot/:code', controller.otp_verification_forgot_password);
 

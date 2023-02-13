@@ -27,6 +27,7 @@ import { userType } from '../types/user.type';
 import WITHDRAW_TYPE from '../types/withdraw.type';
 import BotTelegramServices from '../services/bot.services';
 import bot from '../databases/init.bot';
+import { userModel } from '../models/user.model';
 
 const user_services = new UserServices();
 const otp_services = new OtpServices();
@@ -46,7 +47,10 @@ class UserController {
         try {
             const { code } = req.params;
             const check_otp_forgot: any = await otp_services.check_otp(code);
-            if (check_otp_forgot.code === 0) {
+            if (
+                check_otp_forgot.code === 0 &&
+                check_otp_forgot?.data !== null
+            ) {
                 const data: any = check_otp_forgot.data;
                 const password_random = Math.random().toString(36).slice(-8);
                 bcrypt
@@ -74,22 +78,22 @@ class UserController {
         }
     }
 
-    // [POST] /users/forgotPassword/:idUser
+    // [POST] /users/forgotPassword/:email
     async forgot_password(req: Request, res: Response, next: NextFunction) {
         try {
-            const { idUser } = req.params;
-            const user_find_by_id: any = await user_services.get_user_by_id(
-                idUser
-            );
-            if (user_find_by_id.data === null) {
-                errCode2(next, `User is not valid with id = ${idUser}`);
+            const { email } = req.params;
+            const user: any = await userModel.findOne({
+                'payment.email': email
+            });
+            if (!user) {
+                errCode2(next, `User is not valid with email = ${email}`);
             } else {
                 const code = Math.floor(1000 + Math.random() * 9000);
                 otp_services
-                    .create_otp(idUser, code, 'forgot_pass', '')
+                    .create_otp(user._id, code, 'forgot_pass', '')
                     .then((result: any) => {
                         mail(
-                            user_find_by_id.data.payment.email,
+                            email,
                             `Your otp is ${result.data.code}`,
                             'OTP Forgot Password'
                         )
