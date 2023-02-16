@@ -432,10 +432,10 @@ class UserController {
             if (!contract) {
                 throw Error(`No contract with id = ${idContract}`);
             }
-            const cycle_for_months = parseInt(contract.cycle) / 30;
             const principal = parseInt(contract.principal);
 
             if (contract.type === CONTRACT_ENUM.USD) {
+                const cycle_for_months = parseInt(contract.cycle) / 30;
                 let LT = 0.7;
                 if (principal < 25000000) {
                     if (cycle_for_months < 3) {
@@ -550,13 +550,13 @@ class UserController {
                         (precisionRound(parseFloat(period_interest) / 100) + 1)
                 );
                 dataCode(res, {
-                    disbursement,
-                    principal: formatVND(principal),
-                    month_interest: LT,
-                    period_interest: period_interest
+                    disbursement, // Giải ngân
+                    principal: principal, // Gốc
+                    month_interest: LT, // Lãi tháng
+                    period_interest: period_interest /// Lãi Kỳ
                 });
             } else {
-                const seasons = cycle_for_months / 6;
+                const seasons = parseInt(contract.cycle) / 30;
                 if (seasons < 2) {
                     throw Error(
                         `Because your season is less than 2. No disbursement.`
@@ -568,7 +568,8 @@ class UserController {
                         precisionRound((0.15 * seasons) / 2 + 1)
                 );
                 dataCode(res, {
-                    disbursement: formatVND(disbursement)
+                    disbursement: disbursement, /// Giải ngân
+                    principal: principal /// Gốc
                 });
             }
         } catch (error: any) {
