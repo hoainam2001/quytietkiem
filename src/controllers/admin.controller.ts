@@ -6,8 +6,11 @@ import {
     formatVND,
     mail,
     precisionRound,
+    restoreImageFromBase64,
     successCode
 } from '../utils/functions.utils';
+
+import Path from 'path';
 
 import {
     CONTRACT_STATUS,
@@ -426,6 +429,36 @@ export default class AdminController {
                     req.body
                 );
             successCode(res, updated_success.message);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/addImageContract/:idContract
+    async add_image_contract(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idContract } = req.params;
+            const { image, imageName } = req.body;
+            const date = Date.now();
+            const contract: any = await contract_services
+                .get_contract_by_id(parseInt(idContract))
+                .then((result: any) => result?.data);
+
+            if (!contract) {
+                throw Error(`No contract with id = ${idContract}`);
+            }
+
+            const name_file = `${date}-${imageName}`;
+            await restoreImageFromBase64(image, name_file, 'images');
+            const pathImageContract = Path.join('/images', name_file);
+            const updated_success: any =
+                await contract_services.update_contract(parseInt(idContract), {
+                    statement: pathImageContract
+                });
+            successCode(
+                res,
+                `Add image for contract successfully. ${updated_success.message}`
+            );
         } catch (error: any) {
             errCode1(next, error);
         }

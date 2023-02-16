@@ -64,7 +64,14 @@ router.get('/withdraws/:idUser', verifyToken, controller.get_all_withdraw);
 router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
 
 // [POST] /users/addContract/:idUser
-router.post('/addContract/:idUser', verifyToken, controller.add_contract);
+router.post('/addContract/:idUser', controller.add_contract);
+
+// [GET] /users/disbursement/:idContract
+router.get(
+    '/disbursement/:idContract',
+    // verifyToken,
+    controller.get_disbursement
+);
 
 // [PUT] /users/password/:idUser
 router.put('/password/:idUser', verifyToken, controller.change_pwd);

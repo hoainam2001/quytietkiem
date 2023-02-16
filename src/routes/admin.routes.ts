@@ -88,6 +88,9 @@ routerAdmin.get('/contract/:idContract', controller.get_contract_by_id);
 // [PUT] /admin/contract/:idContract
 routerAdmin.put('/contract/:idContract', controller.update_contract);
 
+// [PUT] /admin/addImageContract/:idContract
+routerAdmin.put('/addImageContract/:idContract', controller.add_image_contract);
+
 // [DELETE] /admin/contract/:idContract
 routerAdmin.delete('/contract/:idContract', controller.delete_contract);
 

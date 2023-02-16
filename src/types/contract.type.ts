@@ -7,6 +7,8 @@ type CONTRACT_TYPE = {
     cycle: string;
     number_of_days_taken: number;
     type: string;
+    statement: string;
+    date_start: Date;
 };
 
 export default CONTRACT_TYPE;

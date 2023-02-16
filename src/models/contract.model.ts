@@ -12,11 +12,13 @@ const Contract = sequelizeConnection.define(
         userId: DataTypes.STRING,
         status: DataTypes.ENUM('Pending', 'Confirmed', 'Completed', 'Canceled'),
         rate: DataTypes.FLOAT,
-        principal: DataTypes.FLOAT,
-        interest_rate: DataTypes.FLOAT,
-        cycle: DataTypes.ENUM('30', '90', '180', '360', '540'),
-        number_of_days_taken: DataTypes.INTEGER,
-        type: DataTypes.ENUM('USD', 'AGRICULTURE')
+        principal: DataTypes.FLOAT, /// tiền gốc
+        interest_rate: DataTypes.FLOAT, /// tiền lãi
+        cycle: DataTypes.STRING, /// chu kì gửi
+        number_of_days_taken: DataTypes.INTEGER, /// số ngày đã gửi
+        type: DataTypes.ENUM('USD', 'AGRICULTURE'), /// loại gửi
+        statement: DataTypes.STRING, //// hình ảnh về hợp đồng
+        date_start: DataTypes.DATE
     },
     {
         freezeTableName: true,
