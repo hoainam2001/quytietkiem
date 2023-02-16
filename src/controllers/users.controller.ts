@@ -545,10 +545,9 @@ class UserController {
                         1) *
                         100
                 ).toFixed(2); // lãi kỳ
-                const disbursement = formatVND(
+                const disbursement =
                     principal *
-                        (precisionRound(parseFloat(period_interest) / 100) + 1)
-                );
+                    (precisionRound(parseFloat(period_interest) / 100) + 1);
                 dataCode(res, {
                     disbursement, // Giải ngân
                     principal: principal, // Gốc
@@ -572,6 +571,184 @@ class UserController {
                     principal: principal /// Gốc
                 });
             }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [POST] /users/disbursement/field
+    async get_disbursement_by_field(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { principalContract, cycleContract, typeContract } = req.body;
+            const principal = parseInt(principalContract);
+
+            if (typeContract === CONTRACT_ENUM.USD) {
+                const cycle_for_months = parseInt(cycleContract);
+                let LT = 0.7;
+                if (principal < 25000000) {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4);
+                    } else {
+                        LT = precisionRound(LT + 0.5);
+                    }
+                } else if (principal >= 25000000 && principal < 200000000) {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0.1);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1 + 0.1);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2 + 0.1);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3 + 0.1);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4 + 0.1);
+                    } else {
+                        LT = precisionRound(LT + 0.5 + 0.1);
+                    }
+                } else if (principal >= 200000000 && principal < 500000000) {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0.2);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1 + 0.2);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2 + 0.2);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3 + 0.2);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4 + 0.2);
+                    } else {
+                        LT = precisionRound(LT + 0.5 + 0.2);
+                    }
+                } else if (principal >= 500000000 && principal < 1000000000) {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0.3);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1 + 0.3);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2 + 0.3);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3 + 0.3);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4 + 0.3);
+                    } else {
+                        LT = precisionRound(LT + 0.5 + 0.3);
+                    }
+                } else if (principal >= 1000000000 && principal < 5000000000) {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0.4);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1 + 0.4);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2 + 0.4);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3 + 0.4);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4 + 0.4);
+                    } else {
+                        LT = precisionRound(LT + 0.5 + 0.4);
+                    }
+                } else {
+                    if (cycle_for_months < 3) {
+                        LT = precisionRound(LT + 0.5);
+                    } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
+                        LT = precisionRound(LT + 0.1 + 0.5);
+                    } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
+                        LT = precisionRound(LT + 0.2 + 0.5);
+                    } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
+                        LT = precisionRound(LT + 0.3 + 0.5);
+                    } else if (
+                        cycle_for_months < 18 &&
+                        cycle_for_months >= 12
+                    ) {
+                        LT = precisionRound(LT + 0.4 + 0.5);
+                    } else {
+                        LT = precisionRound(LT + 0.5 + 0.5);
+                    }
+                }
+                const period_interest = precisionRound(
+                    (Math.pow(1 + precisionRound(LT / 100), cycle_for_months) -
+                        1) *
+                        100
+                ).toFixed(2); // lãi kỳ
+                const disbursement =
+                    principal *
+                    (precisionRound(parseFloat(period_interest) / 100) + 1);
+                dataCode(res, {
+                    disbursement, // Giải ngân
+                    principal: principal, // Gốc
+                    month_interest: LT, // Lãi tháng
+                    period_interest: period_interest /// Lãi Kỳ
+                });
+            } else {
+                const seasons = parseInt(cycleContract);
+                if (seasons < 2) {
+                    throw Error(
+                        `Because your season is less than 2. No disbursement.`
+                    );
+                }
+                const disbursement = precisionRound(
+                    principal *
+                        seasons *
+                        precisionRound((0.15 * seasons) / 2 + 1)
+                );
+                dataCode(res, {
+                    disbursement: disbursement, /// Giải ngân
+                    principal: principal /// Gốc
+                });
+            }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /users/contract/:idUser
+    async get_contract_usd(req: Request, res: Response, next: NextFunction) {
+        try {
+            const contracts: Array<any> = await contract_services
+                .get_all_contract()
+                .then((contracts: any) => contracts.data);
+            if (!contracts) {
+                throw Error(`No contract`);
+            }
+
+            const usd = contracts.filter(
+                (contract: any) => contract.type === CONTRACT_ENUM.USD
+            );
+            const agriculture = contracts.filter(
+                (contract: any) => contract.type === CONTRACT_ENUM.AGRICULTURE
+            );
+
+            dataCode(res, {
+                usd: usd,
+                agriculture: agriculture
+            });
         } catch (error: any) {
             errCode1(next, error);
         }

@@ -73,6 +73,20 @@ router.get(
     controller.get_disbursement
 );
 
+// [GET] /users/contract/:idUser
+router.get(
+    '/contract/:idUser',
+    // verifyToken,
+    controller.get_contract_usd
+);
+
+// [POST] /users/disbursement/field
+router.post(
+    '/disbursement/field',
+    // verifyToken,
+    controller.get_disbursement_by_field
+);
+
 // [PUT] /users/password/:idUser
 router.put('/password/:idUser', verifyToken, controller.change_pwd);
 
