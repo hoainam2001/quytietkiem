@@ -94,7 +94,7 @@ const add_withdraw = async (
 const confirm_deposit = async (chatId: number, idDeposit: string) => {
     try {
         const confirmed_deposit: any = await axios
-            .put(`${process.env.URL}/admin/handleDeposit/${idDeposit}`, {
+            .put(`${process.env.URL}/bot/handleDeposit/${idDeposit}`, {
                 status: DEPOSIT_STATUS.COMPLETED
             })
             .then((result: any) => result.data.data.data);
@@ -114,28 +114,27 @@ const confirm_deposit = async (chatId: number, idDeposit: string) => {
 
 const confirm_withdraw = async (chatId: number, idWithdraw: string) => {
     try {
-        const confirm_withdraw: any = await axios
-            .put(`${process.env.URL}/admin/handleWithdraw/${idWithdraw}`, {
+        await axios
+            .put(`${process.env.URL}/bot/handleWithdraw/${idWithdraw}`, {
                 status: WITHDRAW_STATUS.CONFIRMED
             })
             .then((result: any) => result?.data?.data?.data);
+        const completed: any = await axios
+            .put(`${process.env.URL}/bot/handleWithdraw/${idWithdraw}`, {
+                status: WITHDRAW_STATUS.COMPLETED
+            })
+            .then((result: any) => result.data.data.data);
 
         const get_withdraw: any = await axios
             .get(`${process.env.URL}/admin/withdraw/${idWithdraw}`)
             .then((result: any) => result?.data?.data);
         const message = `<b>Confirm withdraw successfully with amount = ${formatVND(
             parseInt(get_withdraw?.amount)
-        )}</b>\n<b>Balance now: ${formatUSD(
-            parseInt(confirm_withdraw?.Wallet?.balance)
+        )}</b>\n<b>Balance now: ${formatVND(
+            parseInt(completed?.Wallet?.balance)
         )}</b>`;
 
         bot_services.send_message(bot, message.toUpperCase(), chatId);
-        await axios.put(
-            `${process.env.URL}/admin/handleWithdraw/${idWithdraw}`,
-            {
-                status: WITHDRAW_STATUS.COMPLETED
-            }
-        );
     } catch (error: any) {
         bot_services.send_message(bot, `${error.message}`, chatId);
     }

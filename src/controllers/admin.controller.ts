@@ -772,10 +772,9 @@ export default class AdminController {
                             parseInt(idWithdraw)
                         )
                         .then(async (withdrawAfterUpdate: any) => {
-                            successCode(
-                                res,
-                                `${withdrawAfterUpdate.message} to action ${WITHDRAW_STATUS.COMPLETED}`
-                            );
+                            const get_user_final =
+                                await user_services.get_user_by_id(idUser);
+                            dataCode(res, get_user_final);
                         })
                         .catch((err) => errCode1(next, err));
                 } else {

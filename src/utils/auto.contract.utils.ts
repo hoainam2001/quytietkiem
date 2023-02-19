@@ -64,7 +64,7 @@ const handle_add_and_update = async (contract: any) => {
         const day = parseInt(contract.number_of_days_taken);
         const principal = parseInt(contract.principal);
         const rate = parseFloat(contract.rate);
-        const cycle = parseInt(contract.cycle);
+        const cycle = parseInt(contract.cycle) * 30;
         const id_contract = parseInt(contract.id);
 
         if (day < cycle) {

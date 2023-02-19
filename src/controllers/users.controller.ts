@@ -390,7 +390,7 @@ class UserController {
                 rate: 0.06,
                 principal: req.body?.principal.toString(),
                 interest_rate: 0,
-                cycle: (parseInt(req.body?.cycle) * 30).toString(),
+                cycle: parseInt(req.body?.cycle).toString(),
                 number_of_days_taken: 0,
                 type: req.body?.type,
                 statement: '',
@@ -435,109 +435,109 @@ class UserController {
             const principal = parseInt(contract.principal);
 
             if (contract.type === CONTRACT_ENUM.USD) {
-                const cycle_for_months = parseInt(contract.cycle) / 30;
+                const cycle_for_months = parseInt(contract.cycle);
                 let LT = 0.7;
                 if (principal < 25000000) {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0;
+                        LT = precisionRound(LT + 0);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1;
+                        LT = precisionRound(LT + 0.1);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2;
+                        LT = precisionRound(LT + 0.2);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3;
+                        LT = precisionRound(LT + 0.3);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4;
+                        LT = precisionRound(LT + 0.4);
                     } else {
-                        LT = LT + 0.5;
+                        LT = precisionRound(LT + 0.5);
                     }
                 } else if (principal >= 25000000 && principal < 200000000) {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0.1;
+                        LT = precisionRound(LT + 0.1);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1 + 0.1;
+                        LT = precisionRound(LT + 0.1 + 0.1);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2 + 0.1;
+                        LT = precisionRound(LT + 0.2 + 0.1);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3 + 0.1;
+                        LT = precisionRound(LT + 0.3 + 0.1);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4 + 0.1;
+                        LT = precisionRound(LT + 0.4 + 0.1);
                     } else {
-                        LT = LT + 0.5 + 0.1;
+                        LT = precisionRound(LT + 0.5 + 0.1);
                     }
                 } else if (principal >= 200000000 && principal < 500000000) {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0.2;
+                        LT = precisionRound(LT + 0.2);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1 + 0.2;
+                        LT = precisionRound(LT + 0.1 + 0.2);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2 + 0.2;
+                        LT = precisionRound(LT + 0.2 + 0.2);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3 + 0.2;
+                        LT = precisionRound(LT + 0.3 + 0.2);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4 + 0.2;
+                        LT = precisionRound(LT + 0.4 + 0.2);
                     } else {
-                        LT = LT + 0.5 + 0.2;
+                        LT = precisionRound(LT + 0.5 + 0.2);
                     }
                 } else if (principal >= 500000000 && principal < 1000000000) {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0.3;
+                        LT = precisionRound(LT + 0.3);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1 + 0.3;
+                        LT = precisionRound(LT + 0.1 + 0.3);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2 + 0.3;
+                        LT = precisionRound(LT + 0.2 + 0.3);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3 + 0.3;
+                        LT = precisionRound(LT + 0.3 + 0.3);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4 + 0.3;
+                        LT = precisionRound(LT + 0.4 + 0.3);
                     } else {
-                        LT = LT + 0.5 + 0.3;
+                        LT = precisionRound(LT + 0.5 + 0.3);
                     }
                 } else if (principal >= 1000000000 && principal < 5000000000) {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0.4;
+                        LT = precisionRound(LT + 0.4);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1 + 0.4;
+                        LT = precisionRound(LT + 0.1 + 0.4);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2 + 0.4;
+                        LT = precisionRound(LT + 0.2 + 0.4);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3 + 0.4;
+                        LT = precisionRound(LT + 0.3 + 0.4);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4 + 0.4;
+                        LT = precisionRound(LT + 0.4 + 0.4);
                     } else {
-                        LT = LT + 0.5 + 0.4;
+                        LT = precisionRound(LT + 0.5 + 0.4);
                     }
                 } else {
                     if (cycle_for_months < 3) {
-                        LT = LT + 0.5;
+                        LT = precisionRound(LT + 0.5);
                     } else if (cycle_for_months < 6 && cycle_for_months >= 3) {
-                        LT = LT + 0.1 + 0.5;
+                        LT = precisionRound(LT + 0.1 + 0.5);
                     } else if (cycle_for_months < 9 && cycle_for_months >= 6) {
-                        LT = LT + 0.2 + 0.5;
+                        LT = precisionRound(LT + 0.2 + 0.5);
                     } else if (cycle_for_months < 12 && cycle_for_months >= 9) {
-                        LT = LT + 0.3 + 0.5;
+                        LT = precisionRound(LT + 0.3 + 0.5);
                     } else if (
                         cycle_for_months < 18 &&
                         cycle_for_months >= 12
                     ) {
-                        LT = LT + 0.4 + 0.5;
+                        LT = precisionRound(LT + 0.4 + 0.5);
                     } else {
-                        LT = LT + 0.5 + 0.5;
+                        LT = precisionRound(LT + 0.5 + 0.5);
                     }
                 }
                 const period_interest = precisionRound(
@@ -545,9 +545,13 @@ class UserController {
                         1) *
                         100
                 ).toFixed(2); // lãi kỳ
-                const disbursement =
+                const disbursement = precisionRound(
                     principal *
-                    (precisionRound(parseFloat(period_interest) / 100) + 1);
+                        precisionRound(parseFloat(period_interest) / 100 + 1)
+                );
+                console.log(
+                    precisionRound(parseFloat(period_interest) / 100 + 1)
+                );
                 dataCode(res, {
                     disbursement, // Giải ngân
                     principal: principal, // Gốc
@@ -555,7 +559,7 @@ class UserController {
                     period_interest: period_interest /// Lãi Kỳ
                 });
             } else {
-                const seasons = parseInt(contract.cycle) / 30;
+                const seasons = parseInt(contract.cycle);
                 if (seasons < 2) {
                     throw Error(
                         `Because your season is less than 2. No disbursement.`
@@ -731,6 +735,8 @@ class UserController {
     // [GET] /users/contract/:idUser
     async get_contract_usd(req: Request, res: Response, next: NextFunction) {
         try {
+            const { idUser } = req.params;
+
             const contracts: Array<any> = await contract_services
                 .get_all_contract()
                 .then((contracts: any) => contracts.data);
@@ -739,10 +745,14 @@ class UserController {
             }
 
             const usd = contracts.filter(
-                (contract: any) => contract.type === CONTRACT_ENUM.USD
+                (contract: any) =>
+                    contract.type === CONTRACT_ENUM.USD &&
+                    contract.userId === idUser
             );
             const agriculture = contracts.filter(
-                (contract: any) => contract.type === CONTRACT_ENUM.AGRICULTURE
+                (contract: any) =>
+                    contract.type === CONTRACT_ENUM.AGRICULTURE &&
+                    contract.userId === idUser
             );
 
             dataCode(res, {

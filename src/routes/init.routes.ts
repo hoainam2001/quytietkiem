@@ -2,6 +2,7 @@ import { Express, NextFunction, Request, Response } from 'express';
 import { router as AuthenticationRouter } from './authentication.routes';
 import { router as UserRouter } from '../routes/user.routes';
 import routerAdmin from './admin.routes';
+import routerBot from './bot.routes';
 
 import { LoggerErr } from '../utils/logger';
 const LogErr = new LoggerErr('Error');
@@ -15,6 +16,7 @@ const initRoutes = (app: Express) => {
     app.use('/authentication', AuthenticationRouter);
     app.use('/users', UserRouter);
     app.use('/admin', routerAdmin);
+    app.use('/bot', routerBot);
 
     app.use('/', (req: Request, res: Response, next: NextFunction) => {
         res.send('Welcome to api of quy tiet kiem');
