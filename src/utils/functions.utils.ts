@@ -2,6 +2,7 @@ import { NextFunction, Response } from 'express';
 import { Error as ErrorLog } from './logger';
 import { createTransport } from 'nodemailer';
 import Jimp from 'jimp';
+import fs from 'fs';
 
 const transporter = createTransport({
     service: 'gmail',
@@ -81,6 +82,22 @@ const restoreImageFromBase64 = async (
     });
 };
 
+const rename_file = (oldPath: string, newPath: string) => {
+    return new Promise((resolve, reject) => {
+        fs.rename(oldPath, newPath, (err) => {
+            if (err)
+                reject({
+                    code: 1,
+                    message: `Failed for upload image. ${err.message}`
+                });
+            resolve({
+                code: 0,
+                message: 'Upload image successfully'
+            });
+        });
+    });
+};
+
 const formatUSD = (number: number) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -107,5 +124,6 @@ export {
     mail,
     restoreImageFromBase64,
     formatUSD,
-    formatVND
+    formatVND,
+    rename_file
 };

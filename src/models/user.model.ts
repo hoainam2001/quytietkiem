@@ -12,6 +12,7 @@ interface IUser {
             bankName: string;
             name: string;
             account: string;
+            idPayment: number;
         };
         private: boolean;
         rule: string;
@@ -40,7 +41,8 @@ const user = new Schema<IUser>(
             bank: {
                 bankName: { type: String, default: '' },
                 name: { type: String, default: '' },
-                account: { type: String, default: '' }
+                account: { type: String, default: '' },
+                idPayment: { type: Number, default: 0 }
             },
             private: { type: Boolean, default: false },
             rule: {

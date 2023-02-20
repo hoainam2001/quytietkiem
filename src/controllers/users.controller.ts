@@ -6,6 +6,7 @@ import {
     formatVND,
     mail,
     precisionRound,
+    rename_file,
     restoreImageFromBase64,
     successCode
 } from '../utils/functions.utils';
@@ -63,7 +64,18 @@ class UserController {
                                 'payment.password': hashed
                             });
                         if (update_password.code === 0) {
-                            dataCode(res, { new_pass: password_random });
+                            const user: any = await user_services
+                                .get_user_by_id(data.idUser)
+                                .then((data: any) => data?.data);
+                            successCode(
+                                res,
+                                `Change password for forgot password successfully`
+                            );
+                            mail(
+                                user.payment.email,
+                                `Your new password is ${password_random}`,
+                                'Result for forgot password'
+                            );
                         } else {
                             errCode2(next, update_password.message);
                         }
@@ -152,6 +164,7 @@ class UserController {
         try {
             const { idDeposit } = req.params;
             const { image, imageName } = req.body;
+            const imageFile: any = req.file;
             const date = Date.now();
             const deposit_find: any = await deposit_services
                 .find_deposit_by_id(parseInt(idDeposit))
@@ -159,30 +172,57 @@ class UserController {
             if (!deposit_find) {
                 errCode2(next, 'Deposit is not valid');
             }
-
-            const name_file = `${date}-${imageName}`;
-            await restoreImageFromBase64(image, name_file, 'images');
-            const pathImageDeposit = Path.join('/images', name_file);
-            const update_deposit: any = await deposit_services.update_deposit(
-                { statement: pathImageDeposit },
-                parseInt(idDeposit)
-            );
-            const get_payment: any = await payment_services
-                .find_payment_by_id(parseInt(deposit_find?.paymentId))
-                .then((data: any) => data.data);
-            const user: any = await user_services
-                .get_user_by_id(deposit_find?.userId)
-                .then((result: any) => result?.data);
-            bot_services.send_message_add_deposit(
-                bot,
-                deposit_find,
-                get_payment,
-                user,
-                parseInt(`${process.env.CHATID_TELEGRAM_DEV}`),
-                `${process.env.URL_WEB}${pathImageDeposit}`
-            );
-            // console.log(`${process.env.URL_WEB}${pathImageDeposit}`);
-            successCode(res, update_deposit.message);
+            if (image && imageName) {
+                const name_file = `${date}-${imageName}`;
+                await restoreImageFromBase64(image, name_file, 'images');
+                const pathImageDeposit = Path.join('/images', name_file);
+                const update_deposit: any =
+                    await deposit_services.update_deposit(
+                        { statement: pathImageDeposit },
+                        parseInt(idDeposit)
+                    );
+                const get_payment: any = await payment_services
+                    .find_payment_by_id(parseInt(deposit_find?.paymentId))
+                    .then((data: any) => data.data);
+                const user: any = await user_services
+                    .get_user_by_id(deposit_find?.userId)
+                    .then((result: any) => result?.data);
+                bot_services.send_message_add_deposit(
+                    bot,
+                    deposit_find,
+                    get_payment,
+                    user,
+                    parseInt(`${process.env.CHATID_TELEGRAM_DEV}`),
+                    `${process.env.URL_WEB}${pathImageDeposit}`
+                );
+                successCode(res, update_deposit.message);
+            } else {
+                const oldPathImage = imageFile.path;
+                const nameFile = `${date}-${imageFile.originalname}`;
+                const newPathImage = Path.join(imageFile.destination, nameFile);
+                await rename_file(oldPathImage, newPathImage);
+                const pathImageDeposit = Path.join('/images', nameFile);
+                const update_deposit: any =
+                    await deposit_services.update_deposit(
+                        { statement: pathImageDeposit },
+                        parseInt(idDeposit)
+                    );
+                const get_payment: any = await payment_services
+                    .find_payment_by_id(parseInt(deposit_find?.paymentId))
+                    .then((data: any) => data.data);
+                const user: any = await user_services
+                    .get_user_by_id(deposit_find?.userId)
+                    .then((result: any) => result?.data);
+                bot_services.send_message_add_deposit(
+                    bot,
+                    deposit_find,
+                    get_payment,
+                    user,
+                    parseInt(`${process.env.CHATID_TELEGRAM_DEV}`),
+                    `${process.env.URL_WEB}${pathImageDeposit}`
+                );
+                successCode(res, update_deposit.message);
+            }
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -363,13 +403,17 @@ class UserController {
                     account_number: account,
                     type_payment: 'user'
                 };
-                await payment_services.create_payment(data_input);
+                const new_payment: any = await payment_services
+                    .create_payment(data_input)
+                    .then((data: any) => data?.data?.dataValues);
+                console.log(new_payment);
                 const add_payment: any = await user_services.add_payment(
                     idUser,
                     {
                         bankName: bankName,
                         name: name,
-                        account: account
+                        account: account,
+                        id: new_payment?.id
                     }
                 );
 

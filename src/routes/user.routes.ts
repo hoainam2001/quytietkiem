@@ -45,6 +45,7 @@ router.post('/deposit/:idUser', verifyToken, controller.deposit);
 router.put(
     '/additionImageDeposit/:idDeposit',
     verifyToken,
+    single.single('statement'),
     controller.addition_image
 );
 
@@ -64,26 +65,18 @@ router.get('/withdraws/:idUser', verifyToken, controller.get_all_withdraw);
 router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
 
 // [POST] /users/addContract/:idUser
-router.post('/addContract/:idUser', controller.add_contract);
+router.post('/addContract/:idUser', verifyToken, controller.add_contract);
 
 // [GET] /users/disbursement/:idContract
-router.get(
-    '/disbursement/:idContract',
-    // verifyToken,
-    controller.get_disbursement
-);
+router.get('/disbursement/:idContract', controller.get_disbursement);
 
 // [GET] /users/contract/:idUser
-router.get(
-    '/contract/:idUser',
-    // verifyToken,
-    controller.get_contract_usd
-);
+router.get('/contract/:idUser', controller.get_contract_usd);
 
 // [POST] /users/disbursement/field
 router.post(
     '/disbursement/field',
-    // verifyToken,
+    verifyToken,
     controller.get_disbursement_by_field
 );
 

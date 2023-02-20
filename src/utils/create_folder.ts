@@ -23,3 +23,7 @@ if (!fs.existsSync(files)) {
 if (!fs.existsSync('./logs')) {
     fs.mkdirSync('./logs');
 }
+
+if (!fs.existsSync('./logs/morgan')) {
+    fs.mkdirSync('./logs/morgan');
+}

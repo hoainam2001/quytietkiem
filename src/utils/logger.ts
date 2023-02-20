@@ -49,7 +49,7 @@ class LoggerBase {
 
     createLogger() {
         const transport = new winston.transports.DailyRotateFile({
-            filename: './logs/%DATE%.log',
+            filename: './logs/logger/%DATE%.log',
             datePattern: 'YYYY-MM-DD-HH',
             zippedArchive: true,
             maxFiles: '30d',

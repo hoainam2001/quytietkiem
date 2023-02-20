@@ -1,4 +1,4 @@
-import { userModel as User } from '../models/user.model';
+import { userModel as User, userModel } from '../models/user.model';
 import { userType } from '../types/user.type';
 
 class UserServices {
@@ -125,10 +125,11 @@ class UserServices {
             const input = {
                 'payment.bank.bankName': data.bankName,
                 'payment.bank.name': data.name,
-                'payment.bank.account': data.account
+                'payment.bank.account': data.account,
+                'payment.bank.idPayment': data.id
             };
             User.findByIdAndUpdate(id, { $set: input })
-                .then(() => {
+                .then(async () => {
                     resolve({
                         code: 0,
                         message: `Add payment to user successfully with id = ${id}`
