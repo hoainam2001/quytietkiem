@@ -912,7 +912,7 @@ class UserController {
                 imageLicenseFont,
                 imageLicenseBeside
             } = req.body;
-
+            const images: any = req.files;
             const date = Date.now();
             const user: any = await user_services
                 .get_user_by_id(idUser)
@@ -921,61 +921,135 @@ class UserController {
             if (!user) {
                 throw Error(`User is not valid with id = ${idUser}`);
             }
+            if (images) {
+                const { cccdFont, cccdBeside, licenseFont, licenseBeside } =
+                    images;
+                const oldPathCCCDFont = cccdFont[0].path;
+                const oldPathCCCDBeside = cccdBeside[0].path;
+                const oldPathLicenseFont = licenseFont[0].path;
+                const oldPathLicenseBeside = licenseBeside[0].path;
 
-            const result1 = await restoreImageFromBase64(
-                imagePersonNationalityFont.image,
-                `${date}-${imagePersonNationalityFont.fileName}`,
-                'images_user'
-            );
-            const result2 = await restoreImageFromBase64(
-                imagePersonNationalityBeside.image,
-                `${date}-${imagePersonNationalityBeside.fileName}`,
-                'images_user'
-            );
-            const result3 = await restoreImageFromBase64(
-                imageLicenseFont.image,
-                `${date}-${imageLicenseFont.fileName}`,
-                'images_user'
-            );
-            const result4 = await restoreImageFromBase64(
-                imageLicenseBeside.image,
-                `${date}-${imageLicenseBeside.fileName}`,
-                'images_user'
-            );
-            const [res1, res2, res3, res4] = await Promise.all([
-                result1,
-                result2,
-                result3,
-                result4
-            ]);
+                const nameFileCCCDFONT = `${date}-${cccdFont[0].originalname}`;
+                const nameFileCCCDBESIDE = `${date}-${cccdBeside[0].originalname}`;
+                const nameFileLicenseFont = `${date}-${licenseFont[0].originalname}`;
+                const nameFileLicenseBeside = `${date}-${licenseBeside[0].originalname}`;
 
-            const pathPersonNationalityFont = Path.join(
-                '/images_user',
-                `${date}-${imagePersonNationalityFont.fileName}`
-            );
-            const pathPersonNationalityBeside = Path.join(
-                '/images_user',
-                `${date}-${imagePersonNationalityBeside.fileName}`
-            );
-            const pathLicenseFont = Path.join(
-                '/images_user',
-                `${date}-${imageLicenseFont.fileName}`
-            );
-            const pathLicenseBeside = Path.join(
-                '/images_user',
-                `${date}-${imageLicenseBeside.fileName}`
-            );
+                const newPathCCCDFONT = Path.join(
+                    cccdFont[0].destination,
+                    nameFileCCCDFONT
+                );
+                const newPathCCCDBESIDE = Path.join(
+                    cccdBeside[0].destination,
+                    nameFileCCCDBESIDE
+                );
+                const newPathLiscenseFONT = Path.join(
+                    licenseFont[0].destination,
+                    nameFileLicenseFont
+                );
+                const newPathLiscenseBESIDE = Path.join(
+                    licenseBeside[0].destination,
+                    nameFileLicenseBeside
+                );
 
-            const updatedUser: any = await user_services.update_user(idUser, {
-                uploadCCCDFont: pathPersonNationalityFont,
-                uploadCCCDBeside: pathPersonNationalityBeside,
-                uploadLicenseFont: pathLicenseFont,
-                uploadLicenseBeside: pathLicenseBeside
-            });
-            successCode(
-                res,
-                `Upload image user successfully. ${updatedUser.message}`
-            );
+                const pathImage1 = Path.join('/images_user', nameFileCCCDFONT);
+                const pathImage2 = Path.join(
+                    '/images_user',
+                    nameFileCCCDBESIDE
+                );
+                const pathImage3 = Path.join(
+                    '/images_user',
+                    nameFileLicenseFont
+                );
+                const pathImage4 = Path.join(
+                    '/images_user',
+                    nameFileLicenseBeside
+                );
+
+                const result1 = await rename_file(
+                    oldPathCCCDFont,
+                    newPathCCCDFONT
+                );
+                const result2 = await rename_file(
+                    oldPathCCCDBeside,
+                    newPathCCCDBESIDE
+                );
+                const result3 = await rename_file(
+                    oldPathLicenseFont,
+                    newPathLiscenseFONT
+                );
+                const result4 = await rename_file(
+                    oldPathLicenseBeside,
+                    newPathLiscenseBESIDE
+                );
+                await Promise.all([result1, result2, result3, result4]);
+
+                const updatedUser: any = await user_services.update_user(
+                    idUser,
+                    {
+                        uploadCCCDFont: pathImage1,
+                        uploadCCCDBeside: pathImage2,
+                        uploadLicenseFont: pathImage3,
+                        uploadLicenseBeside: pathImage4
+                    }
+                );
+                successCode(
+                    res,
+                    `Upload image user successfully. ${updatedUser.message}`
+                );
+            } else {
+                const result1 = await restoreImageFromBase64(
+                    imagePersonNationalityFont.image,
+                    `${date}-${imagePersonNationalityFont.fileName}`,
+                    'images_user'
+                );
+                const result2 = await restoreImageFromBase64(
+                    imagePersonNationalityBeside.image,
+                    `${date}-${imagePersonNationalityBeside.fileName}`,
+                    'images_user'
+                );
+                const result3 = await restoreImageFromBase64(
+                    imageLicenseFont.image,
+                    `${date}-${imageLicenseFont.fileName}`,
+                    'images_user'
+                );
+                const result4 = await restoreImageFromBase64(
+                    imageLicenseBeside.image,
+                    `${date}-${imageLicenseBeside.fileName}`,
+                    'images_user'
+                );
+                await Promise.all([result1, result2, result3, result4]);
+
+                const pathPersonNationalityFont = Path.join(
+                    '/images_user',
+                    `${date}-${imagePersonNationalityFont.fileName}`
+                );
+                const pathPersonNationalityBeside = Path.join(
+                    '/images_user',
+                    `${date}-${imagePersonNationalityBeside.fileName}`
+                );
+                const pathLicenseFont = Path.join(
+                    '/images_user',
+                    `${date}-${imageLicenseFont.fileName}`
+                );
+                const pathLicenseBeside = Path.join(
+                    '/images_user',
+                    `${date}-${imageLicenseBeside.fileName}`
+                );
+
+                const updatedUser: any = await user_services.update_user(
+                    idUser,
+                    {
+                        uploadCCCDFont: pathPersonNationalityFont,
+                        uploadCCCDBeside: pathPersonNationalityBeside,
+                        uploadLicenseFont: pathLicenseFont,
+                        uploadLicenseBeside: pathLicenseBeside
+                    }
+                );
+                successCode(
+                    res,
+                    `Upload image user successfully. ${updatedUser.message}`
+                );
+            }
         } catch (error: any) {
             errCode1(next, error);
         }

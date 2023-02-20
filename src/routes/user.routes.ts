@@ -90,6 +90,6 @@ router.post(
 router.put('/password/:idUser', verifyToken, controller.change_pwd);
 
 // [PUT] /users/image/:idUser
-router.put('/image/:idUser', controller.upload_image);
+router.put('/image/:idUser', cpUpload, controller.upload_image);
 
 export { router };
