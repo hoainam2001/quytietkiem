@@ -486,6 +486,99 @@ export default class AdminController {
         }
     }
 
+    // ---------------------------- TOTAL ----------------------------
+
+    // [GET] /admin/total/deposit
+    async total_deposit(req: Request, res: Response, next: NextFunction) {
+        try {
+            const deposits = await deposit_services
+                .get_all()
+                .then((data: any) => data?.data);
+            let sum = 0;
+            for (let index = 0; index < deposits.length; index++) {
+                const element: any = deposits[index];
+                const user: any = await user_services
+                    .get_user_by_id(element.userId)
+                    .then((data: any) => data?.data);
+                if (!(user.rank === 'DEMO')) {
+                    sum += element.amount;
+                }
+            }
+            dataCode(res, {
+                sum: formatVND(sum),
+                deposits
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/total/withdraw
+    async total_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const withdraw = await withdraw_services
+                .get_all()
+                .then((data: any) => data?.data);
+            let sum = 0;
+            for (let index = 0; index < withdraw.length; index++) {
+                const element: any = withdraw[index];
+                const user: any = await user_services
+                    .get_user_by_id(element.userId)
+                    .then((data: any) => data?.data);
+                if (!(user.rank === 'DEMO')) {
+                    sum += element.amount;
+                }
+            }
+            dataCode(res, {
+                sum: formatVND(sum),
+                withdraw
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/total/balance
+    async total_balance(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users: any = await user_services
+                .get_all_user()
+                .then((data: any) => data?.data);
+            let sum = 0;
+            for (let index = 0; index < users.length; index++) {
+                const element = users[index];
+                if (!(element.rank === 'DEMO')) {
+                    sum += element.Wallet.balance;
+                }
+            }
+            dataCode(res, {
+                sum: formatVND(sum),
+                users
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /admin/total/user/isBalance
+    async total_user_have_balance(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const users: Array<any> = await user_services
+                .get_all_user()
+                .then((data: any) => data?.data);
+            const filter_user = users.filter(
+                (user: any) => !(user.rank === 'DEMO')
+            );
+            dataCode(res, filter_user);
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
     // ---------------------------- HANDLE_EVENT ----------------------------
 
     // [PUT] /admin/handleDeposit/:idDeposit

@@ -59,7 +59,13 @@ router.post('/withdraw/:idUser', verifyToken, controller.withdraw);
 router.get('/enterOtpWithdraw/:code', controller.enter_otp_withdraw);
 
 // [GET] /users/withdraws/:idUser
-router.get('/withdraws/:idUser', verifyToken, controller.get_all_withdraw);
+router.get('/withdraws/:idUser', controller.get_all_withdraw);
+
+// [POST] /users/withdraw/otp/resend/:idWithdraw
+router.post('/withdraw/otp/resend/:idWithdraw', controller.resend_otp_withdraw);
+
+// [DELETE] /users/withdraw/cancel/:idWithdraw
+router.delete('/withdraw/cancel/:idWithdraw', controller.cancel_withdraw);
 
 // [PUT] /users/addPayment/:idUser
 router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
@@ -82,5 +88,8 @@ router.post(
 
 // [PUT] /users/password/:idUser
 router.put('/password/:idUser', verifyToken, controller.change_pwd);
+
+// [PUT] /users/image/:idUser
+router.put('/image/:idUser', controller.upload_image);
 
 export { router };

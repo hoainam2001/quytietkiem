@@ -341,7 +341,7 @@ class UserController {
 
                 axios
                     .put(
-                        `${process.env.URL}/admin/handleWithdraw/${idWithdraw}`,
+                        `${process.env.URL}/bot/handleWithdraw/${idWithdraw}`,
                         {
                             status: 'Confirmed'
                         }
@@ -363,6 +363,9 @@ class UserController {
                             user,
                             parseInt(`${process.env.CHATID_TELEGRAM_DEV}`)
                         );
+                        await otp_services.delete_otp_withdraw(
+                            parseInt(idWithdraw)
+                        );
                     })
                     .catch((err) => errCode1(next, err));
             } else {
@@ -371,6 +374,61 @@ class UserController {
                     `Something error when check otp code. Please contact to admin to fix them. ${check_otp_forgot.message}`
                 );
             }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [POST] /users/withdraw/otp/resend/:idWithdraw
+    async resend_otp_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idWithdraw } = req.params;
+            const withdraw: any = await withdraw_services
+                .find_withdraw_by_id(parseInt(idWithdraw))
+                .then((data: any) => data?.data);
+
+            if (!withdraw) {
+                throw Error(`Withdraw is not valid with id = ${idWithdraw}`);
+            }
+
+            await otp_services.delete_otp_withdraw(parseInt(idWithdraw));
+            const code = Math.floor(1000 + Math.random() * 9000);
+            await otp_services.create_otp(
+                withdraw.userId,
+                code,
+                'otp_withdraw',
+                withdraw.id.toString()
+            );
+            successCode(res, `Resend code for withdraw successfully`);
+            const user: any = await user_services
+                .get_user_by_id(withdraw.userId.toString())
+                .then((data: any) => data?.data);
+            await mail(
+                user.payment.email,
+                `This is new code for your withdraw ${code}`,
+                'Resend otp withdraw'
+            );
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [DELETE] /users/withdraw/cancel/:idWithdraw
+    async cancel_withdraw(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idWithdraw } = req.params;
+            const withdraw: any = await withdraw_services
+                .find_withdraw_by_id(parseInt(idWithdraw))
+                .then((data: any) => data?.data);
+
+            if (!withdraw) {
+                throw Error(`Withdraw is not valid with id = ${idWithdraw}`);
+            }
+            await withdraw_services.delete_withdraw(parseInt(idWithdraw));
+            successCode(
+                res,
+                `Canceled withdraw successfully with id = ${idWithdraw}`
+            );
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -808,6 +866,8 @@ class UserController {
         }
     }
 
+    // ---------------------------- USER SERVICE INFORMATION ----------------------------
+
     // [PUT] /users/password/:idUser
     async change_pwd(req: Request, res: Response, next: NextFunction) {
         try {
@@ -837,6 +897,85 @@ class UserController {
                     }
                 })
                 .catch((err) => errCode1(next, err));
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /users/image/:idUser
+    async upload_image(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const {
+                imagePersonNationalityFont,
+                imagePersonNationalityBeside,
+                imageLicenseFont,
+                imageLicenseBeside
+            } = req.body;
+
+            const date = Date.now();
+            const user: any = await user_services
+                .get_user_by_id(idUser)
+                .then((data: any) => data?.data);
+
+            if (!user) {
+                throw Error(`User is not valid with id = ${idUser}`);
+            }
+
+            const result1 = await restoreImageFromBase64(
+                imagePersonNationalityFont.image,
+                `${date}-${imagePersonNationalityFont.fileName}`,
+                'images_user'
+            );
+            const result2 = await restoreImageFromBase64(
+                imagePersonNationalityBeside.image,
+                `${date}-${imagePersonNationalityBeside.fileName}`,
+                'images_user'
+            );
+            const result3 = await restoreImageFromBase64(
+                imageLicenseFont.image,
+                `${date}-${imageLicenseFont.fileName}`,
+                'images_user'
+            );
+            const result4 = await restoreImageFromBase64(
+                imageLicenseBeside.image,
+                `${date}-${imageLicenseBeside.fileName}`,
+                'images_user'
+            );
+            const [res1, res2, res3, res4] = await Promise.all([
+                result1,
+                result2,
+                result3,
+                result4
+            ]);
+
+            const pathPersonNationalityFont = Path.join(
+                '/images_user',
+                `${date}-${imagePersonNationalityFont.fileName}`
+            );
+            const pathPersonNationalityBeside = Path.join(
+                '/images_user',
+                `${date}-${imagePersonNationalityBeside.fileName}`
+            );
+            const pathLicenseFont = Path.join(
+                '/images_user',
+                `${date}-${imageLicenseFont.fileName}`
+            );
+            const pathLicenseBeside = Path.join(
+                '/images_user',
+                `${date}-${imageLicenseBeside.fileName}`
+            );
+
+            const updatedUser: any = await user_services.update_user(idUser, {
+                uploadCCCDFont: pathPersonNationalityFont,
+                uploadCCCDBeside: pathPersonNationalityBeside,
+                uploadLicenseFont: pathLicenseFont,
+                uploadLicenseBeside: pathLicenseBeside
+            });
+            successCode(
+                res,
+                `Upload image user successfully. ${updatedUser.message}`
+            );
         } catch (error: any) {
             errCode1(next, error);
         }

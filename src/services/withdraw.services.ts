@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 import Payment from '../models/payment.model';
 import Withdraw from '../models/withdraw.model';
 

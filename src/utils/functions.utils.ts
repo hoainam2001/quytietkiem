@@ -77,7 +77,12 @@ const restoreImageFromBase64 = async (
                 .then(() => {
                     resolve({ code: 0, message: 'Restore image successfully' });
                 })
-                .catch((err) => reject({ code: 1, message: err.message }));
+                .catch((err) =>
+                    reject({
+                        code: 1,
+                        message: `Upload file failed in file = ${fileName} .${err.message}`
+                    })
+                );
         });
     });
 };

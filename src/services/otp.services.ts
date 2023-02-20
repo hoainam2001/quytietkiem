@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+/* eslint-disable no-async-promise-executor */
 import { otpModel as OTP } from '../models/otp.model';
 
 class OtpServices {
@@ -44,6 +44,28 @@ class OtpServices {
                         message: `Failed in check otp. ${err.message}`
                     })
                 );
+        });
+    }
+
+    delete_otp_withdraw(idServices: number) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const otps: Array<any> = await OTP.find({
+                    idServices: idServices
+                });
+                if (otps.length > 0) {
+                    otps.forEach(async (otp: any) => {
+                        await OTP.findByIdAndDelete(otp._id);
+                    });
+                    resolve({ code: 0, message: 'Delete successfully' });
+                }
+                resolve({ code: 0, message: 'Delete successfully' });
+            } catch (error: any) {
+                reject({
+                    code: 1,
+                    message: `Delete failed in delete_otp_withdraw. ${error.message}`
+                });
+            }
         });
     }
 }

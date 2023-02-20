@@ -159,6 +159,20 @@ routerAdmin.delete(
     controller.delete_contract
 );
 
+/// ----------------------------------TOTAL ----------------------------------
+
+// [GET] /admin/total/deposit
+routerAdmin.get('/total/deposit', controller.total_deposit);
+
+// [GET] /admin/total/withdraw
+routerAdmin.get('/total/withdraw', controller.total_withdraw);
+
+// [GET] /admin/total/balance
+routerAdmin.get('/total/balance', controller.total_balance);
+
+// [GET] /admin/total/user/isBalance
+routerAdmin.get('/total/user/isBalance', controller.total_user_have_balance);
+
 /// ----------------------------------HANDLE ----------------------------------
 
 // [PUT] /admin/handleContract/:idContract
