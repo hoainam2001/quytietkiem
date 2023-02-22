@@ -163,12 +163,27 @@ bot.onText(/\/start/, (msg) => {
 bot.onText(/\/confirm_deposit_.+$/, (msg) => {
     try {
         const chatId = msg.chat.id;
-        const command: Array<string> = msg.text?.split('_') || [];
-        if (command.length === 0) {
-            bot_services.send_message(bot, `Command is false`, chatId);
+        if (msg.text?.includes('@')) {
+            const raw = msg.text?.split('@')[0];
+            const command: Array<string> = raw?.split('_') || [];
+            if (command.length === 0) {
+                bot_services.send_message(bot, `Command is false`, chatId);
+            } else {
+                const command_name = `${command[0].replace('/', '')}_${
+                    command[1]
+                }`;
+                command_bot[command_name](chatId, command[2]);
+            }
         } else {
-            const command_name = `${command[0].replace('/', '')}_${command[1]}`;
-            command_bot[command_name](chatId, command[2]);
+            const command: Array<string> = msg.text?.split('_') || [];
+            if (command.length === 0) {
+                bot_services.send_message(bot, `Command is false`, chatId);
+            } else {
+                const command_name = `${command[0].replace('/', '')}_${
+                    command[1]
+                }`;
+                command_bot[command_name](chatId, command[2]);
+            }
         }
     } catch (error: any) {
         bot_services.send_message(bot, `${error.message}`, msg.chat.id);
@@ -178,12 +193,27 @@ bot.onText(/\/confirm_deposit_.+$/, (msg) => {
 bot.onText(/\/confirm_withdraw_.+$/, (msg) => {
     try {
         const chatId = msg.chat.id;
-        const command: Array<string> = msg.text?.split('_') || [];
-        if (command.length === 0) {
-            bot_services.send_message(bot, `Command is false`, chatId);
+        if (msg.text?.includes('@')) {
+            const raw = msg.text?.split('@')[0];
+            const command: Array<string> = raw?.split('_') || [];
+            if (command.length === 0) {
+                bot_services.send_message(bot, `Command is false`, chatId);
+            } else {
+                const command_name = `${command[0].replace('/', '')}_${
+                    command[1]
+                }`;
+                command_bot[command_name](chatId, command[2]);
+            }
         } else {
-            const command_name = `${command[0].replace('/', '')}_${command[1]}`;
-            command_bot[command_name](chatId, command[2]);
+            const command: Array<string> = msg.text?.split('_') || [];
+            if (command.length === 0) {
+                bot_services.send_message(bot, `Command is false`, chatId);
+            } else {
+                const command_name = `${command[0].replace('/', '')}_${
+                    command[1]
+                }`;
+                command_bot[command_name](chatId, command[2]);
+            }
         }
     } catch (error: any) {
         bot_services.send_message(bot, `${error.message}`, msg.chat.id);

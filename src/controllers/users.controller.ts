@@ -31,6 +31,7 @@ import WITHDRAW_TYPE from '../types/withdraw.type';
 import BotTelegramServices from '../services/bot.services';
 import bot from '../databases/init.bot';
 import { userModel } from '../models/user.model';
+import moment from 'moment';
 
 const user_services = new UserServices();
 const otp_services = new OtpServices();
@@ -1050,6 +1051,101 @@ class UserController {
                     `Upload image user successfully. ${updatedUser.message}`
                 );
             }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [GET] /users/total/assets/:idUser
+    async get_total_assets(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const user: any = await user_services
+                .get_user_by_id(idUser)
+                .then((data: any) => data?.data);
+            const contracts: Array<any> = await contract_services
+                .get_all_contract()
+                .then((contracts: any) => contracts.data);
+            if (!contracts) {
+                throw Error(`No contract`);
+            }
+
+            const usd = contracts.filter(
+                (contract: any) =>
+                    contract.type === CONTRACT_ENUM.USD &&
+                    contract.userId === idUser
+            );
+            const agriculture = contracts.filter(
+                (contract: any) =>
+                    contract.type === CONTRACT_ENUM.AGRICULTURE &&
+                    contract.userId === idUser
+            );
+
+            let sum_usd_contract = 0;
+            let sum_agriculture_contract = 0;
+
+            // calculate total usd contract
+            for (let index = 0; index < usd.length; index++) {
+                const element: CONTRACT_TYPE = usd[index];
+                if (
+                    element.status !== CONTRACT_STATUS.PENDING &&
+                    element.status !== CONTRACT_STATUS.CANCELED
+                ) {
+                    sum_usd_contract += element.principal;
+                }
+            }
+
+            // calculate total agriculture contract
+            for (let index = 0; index < agriculture.length; index++) {
+                const element: CONTRACT_TYPE = agriculture[index];
+                if (
+                    element.status !== CONTRACT_STATUS.PENDING &&
+                    element.status !== CONTRACT_STATUS.CANCELED
+                ) {
+                    sum_agriculture_contract += element.principal;
+                }
+            }
+
+            // total contracts
+            const total_contract = precisionRound(
+                sum_agriculture_contract +
+                    sum_usd_contract +
+                    user.Wallet.balance
+            );
+            dataCode(res, {
+                surplus: user.Wallet.balance,
+                fund_wallet: total_contract,
+                sum_agriculture_contract,
+                sum_usd_contract
+            });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [POST] /users/destroy/contract/:idContract
+    async destroy_contract(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idContract } = req.params;
+            const contract: any = await contract_services
+                .get_contract_by_id(parseInt(idContract))
+                .then((result: any) => result?.data);
+
+            const message = `<b>Loại: Huỷ hợp đồng</b>\n<b>Loại quỹ: ${
+                contract.type
+            }</b>\n<b>Id: ${contract.id}</b>\n<b>Id của khách hàng: ${
+                contract.userId
+            }</b>\n<b>Tiền vốn: ${formatVND(
+                contract.principal
+            )}</b>\n<b>Ngày bắt đầu: ${moment(contract.date_start).format(
+                'llll'
+            )}</b>`;
+            bot_services.send_message(
+                bot,
+                message,
+                parseInt(`${process.env.CHATID_TELEGRAM_DEV}`)
+            );
+            successCode(res, `Request Successfully for destroy contract`);
         } catch (error: any) {
             errCode1(next, error);
         }

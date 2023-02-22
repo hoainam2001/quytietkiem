@@ -2,7 +2,11 @@ import express from 'express';
 const routerAdmin = express.Router();
 
 import AdminController from '../controllers/admin.controller';
-import { verifyPermission, verifyToken } from '../middlewares/checkToken';
+import {
+    check_lock,
+    verifyPermission,
+    verifyToken
+} from '../middlewares/checkToken';
 
 const controller = new AdminController();
 
@@ -10,6 +14,7 @@ const controller = new AdminController();
 routerAdmin.post(
     '/addRate',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.addRate
 );
@@ -21,6 +26,7 @@ routerAdmin.get('/getRate/:id', controller.getRate);
 routerAdmin.put(
     '/updateRate/:id',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_rate
 );
@@ -29,6 +35,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/deleteRate/:idRate',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_rate
 );
@@ -43,6 +50,7 @@ routerAdmin.get('/user/:idUser', controller.get_user_by_id);
 routerAdmin.put(
     '/updateUser/:idUser',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_user
 );
@@ -51,6 +59,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/deleteUser/:idUser',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_user
 );
@@ -65,6 +74,7 @@ routerAdmin.get('/payment/:idPayment', controller.get_payment_by_id);
 routerAdmin.post(
     '/addPayment',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.add_payment
 );
@@ -73,6 +83,7 @@ routerAdmin.post(
 routerAdmin.put(
     '/updatePayment/:idPayment',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_payment
 );
@@ -81,6 +92,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/deletePayment/:idPayment',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_payment
 );
@@ -95,6 +107,7 @@ routerAdmin.get('/deposit/:idDeposit', controller.get_deposit_by_id);
 routerAdmin.put(
     '/updateDeposit/:idDeposit',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_deposit
 );
@@ -103,6 +116,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/deleteDeposit/:idDeposit',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_deposit
 );
@@ -117,6 +131,7 @@ routerAdmin.get('/withdraw/:idWithdraw', controller.get_withdraw_by_id);
 routerAdmin.put(
     '/updateWithdraw/:idWithdraw',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_withdraw
 );
@@ -125,6 +140,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/deleteWithdraw/:idWithdraw',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_withdraw
 );
@@ -139,6 +155,7 @@ routerAdmin.get('/contract/:idContract', controller.get_contract_by_id);
 routerAdmin.put(
     '/contract/:idContract',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.update_contract
 );
@@ -147,6 +164,7 @@ routerAdmin.put(
 routerAdmin.put(
     '/addImageContract/:idContract',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.add_image_contract
 );
@@ -155,6 +173,7 @@ routerAdmin.put(
 routerAdmin.delete(
     '/contract/:idContract',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.delete_contract
 );
@@ -179,6 +198,7 @@ routerAdmin.get('/total/user/isBalance', controller.total_user_have_balance);
 routerAdmin.put(
     '/handleContract/:idContract',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.handle_contract_v1
 );
@@ -187,6 +207,7 @@ routerAdmin.put(
 routerAdmin.put(
     '/handleDeposit/:idDeposit',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.handle_deposit_v1
 );
@@ -195,8 +216,18 @@ routerAdmin.put(
 routerAdmin.put(
     '/handleWithdraw/:idWithdraw',
     verifyToken,
+    check_lock,
     verifyPermission(['admin']),
     controller.handle_withdraw_v1
+);
+
+// [PUT] /admin/user/block/:email
+routerAdmin.put(
+    '/user/block/:email',
+    verifyToken,
+    check_lock,
+    verifyPermission(['admin']),
+    controller.handle_block_user
 );
 
 export default routerAdmin;

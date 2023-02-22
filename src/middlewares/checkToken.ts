@@ -58,6 +58,18 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const check_lock = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user: userType = res.locals.user;
+        if (user.blockUser) {
+            throw Error(`User is locked. Please contact to admin to unlock.`);
+        }
+        next();
+    } catch (error: any) {
+        errCode1(next, error);
+    }
+};
+
 const verifyPermission = (permissions: Array<string>) => {
     return (req: Request, res: Response, next: NextFunction) => {
         const user: userType = res.locals.user;
@@ -70,4 +82,4 @@ const verifyPermission = (permissions: Array<string>) => {
     };
 };
 
-export { verifyToken, verifyPermission };
+export { verifyToken, verifyPermission, check_lock };

@@ -90,8 +90,19 @@ export default class AdminController {
     // [GET] /admin/getPayments
     async get_all_payment(req: Request, res: Response, next: NextFunction) {
         try {
-            const payments: any = await payment_services.get_all();
-            dataCode(res, payments.data);
+            const page = req.query?.page ? req.query?.page : '1';
+            const show = req.query?.show ? req.query?.show : '10';
+            const step: number = precisionRound(
+                (parseInt(`${page}`) - 1) * parseInt(`${show}`)
+            );
+
+            const payments: any = await payment_services
+                .get_all()
+                .then((data: any) => data?.data);
+
+            const result = payments.slice(step, step + parseInt(`${show}`));
+
+            dataCode(res, result);
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -158,8 +169,16 @@ export default class AdminController {
     // [GET] /admin/allUsers
     async get_all_users(req: Request, res: Response, next: NextFunction) {
         try {
-            const list_users: any = await user_services.get_all_user();
-            dataCode(res, list_users.data);
+            const page = req.query?.page ? req.query?.page : '1';
+            const show = req.query?.show ? req.query?.show : '10';
+            const step: number = precisionRound(
+                (parseInt(`${page}`) - 1) * parseInt(`${show}`)
+            );
+            const list_users: any = await user_services
+                .get_all_user()
+                .then((data: any) => data?.data);
+            const result = list_users.slice(step, step + parseInt(`${show}`));
+            dataCode(res, result);
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -1047,6 +1066,45 @@ export default class AdminController {
                         `Contract is not enough condition to ${CONTRACT_STATUS.PENDING}. PLS ${CONTRACT_STATUS.CANCELED} first`
                     );
                 }
+            }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // ---------------------------- USER SERVICES ----------------------------
+
+    // [PUT] /admin/user/block/:email
+    async handle_block_user(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.params;
+            const user: any = await user_services
+                .get_user_by_email(email)
+                .then((data: any) => data?.data);
+            if (!user) {
+                throw Error(`User is not valid with email = ${email}`);
+            }
+            const lock_user_status = user.blockUser;
+            if (!lock_user_status === true) {
+                const lock_user: any = user_services
+                    .update_user(user._id, {
+                        blockUser: !lock_user_status
+                    })
+                    .then((data: any) => data?.data);
+                successCode(
+                    res,
+                    `Lock user successfully. ${lock_user.message}`
+                );
+            } else {
+                const lock_user: any = user_services
+                    .update_user(user._id, {
+                        blockUser: !lock_user_status
+                    })
+                    .then((data: any) => data?.data);
+                successCode(
+                    res,
+                    `Unlock user successfully. ${lock_user.message}`
+                );
             }
         } catch (error: any) {
             errCode1(next, error);

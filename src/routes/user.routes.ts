@@ -5,7 +5,11 @@ import multer from 'multer';
 import path from 'path';
 
 import { UserController } from '../controllers/users.controller';
-import { verifyPermission, verifyToken } from '../middlewares/checkToken';
+import {
+    check_lock,
+    verifyPermission,
+    verifyToken
+} from '../middlewares/checkToken';
 
 const controller = new UserController();
 
@@ -39,7 +43,7 @@ router.post('/forgotPassword/:email', controller.forgot_password);
 router.get('/otpForGot/:code', controller.otp_verification_forgot_password);
 
 // [POST] /users/deposit/:idUser
-router.post('/deposit/:idUser', verifyToken, controller.deposit);
+router.post('/deposit/:idUser', verifyToken, check_lock, controller.deposit);
 
 // [PUT] /users/additionImageDeposit/:idDeposit
 router.put(
@@ -53,7 +57,7 @@ router.put(
 router.get('/deposits/:idUser', verifyToken, controller.get_all_deposit);
 
 // [POST] /users/withdraw/:idUser
-router.post('/withdraw/:idUser', verifyToken, controller.withdraw);
+router.post('/withdraw/:idUser', verifyToken, check_lock, controller.withdraw);
 
 // [GET] /users/enterOtpWithdraw/:code
 router.get('/enterOtpWithdraw/:code', controller.enter_otp_withdraw);
@@ -68,10 +72,20 @@ router.post('/withdraw/otp/resend/:idWithdraw', controller.resend_otp_withdraw);
 router.delete('/withdraw/cancel/:idWithdraw', controller.cancel_withdraw);
 
 // [PUT] /users/addPayment/:idUser
-router.put('/addPayment/:idUser', verifyToken, controller.addPayment);
+router.put(
+    '/addPayment/:idUser',
+    verifyToken,
+    check_lock,
+    controller.addPayment
+);
 
 // [POST] /users/addContract/:idUser
-router.post('/addContract/:idUser', verifyToken, controller.add_contract);
+router.post(
+    '/addContract/:idUser',
+    verifyToken,
+    check_lock,
+    controller.add_contract
+);
 
 // [GET] /users/disbursement/:idContract
 router.get('/disbursement/:idContract', controller.get_disbursement);
@@ -83,13 +97,20 @@ router.get('/contract/:idUser', controller.get_contract_usd);
 router.post(
     '/disbursement/field',
     verifyToken,
+    check_lock,
     controller.get_disbursement_by_field
 );
 
 // [PUT] /users/password/:idUser
-router.put('/password/:idUser', verifyToken, controller.change_pwd);
+router.put('/password/:idUser', verifyToken, check_lock, controller.change_pwd);
 
 // [PUT] /users/image/:idUser
-router.put('/image/:idUser', cpUpload, controller.upload_image);
+router.put('/image/:idUser', cpUpload, check_lock, controller.upload_image);
+
+// [GET] /users/total/assets/:idUser
+router.get('/total/assets/:idUser', controller.get_total_assets);
+
+// [POST] /users/destroy/contract/:idContract
+router.post('/destroy/contract/:idContract', controller.destroy_contract);
 
 export { router };
