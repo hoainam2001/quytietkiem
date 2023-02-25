@@ -119,6 +119,17 @@ const formatVND = (number: number) => {
     }).format(number);
 };
 
+const generatePassword = async (length: number) => {
+    const charset =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+    return password;
+};
+
 export {
     errCode1,
     errCode2,
@@ -130,5 +141,6 @@ export {
     restoreImageFromBase64,
     formatUSD,
     formatVND,
-    rename_file
+    rename_file,
+    generatePassword
 };

@@ -5,7 +5,7 @@ import PaymentServices from '../services/payment.services';
 import { UserServices } from '../services/user.services';
 import WithdrawServices from '../services/withdraw.services';
 import { DEPOSIT_STATUS, WITHDRAW_STATUS } from '../types/enum';
-import { formatUSD, formatVND } from '../utils/functions.utils';
+import { formatVND } from '../utils/functions.utils';
 
 const bot_services = new BotTelegramServices();
 const user_services = new UserServices();

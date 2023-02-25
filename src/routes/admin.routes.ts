@@ -230,4 +230,31 @@ routerAdmin.put(
     controller.handle_block_user
 );
 
+// [PUT] /admin/password/refresh/:idUser
+routerAdmin.put(
+    '/password/refresh/:idUser',
+    verifyToken,
+    check_lock,
+    verifyPermission(['admin']),
+    controller.refresh_password
+);
+
+// [PUT] /admin/password/change/:idUser
+routerAdmin.put(
+    '/password/change/:idUser',
+    verifyToken,
+    check_lock,
+    verifyPermission(['admin']),
+    controller.change_password
+);
+
+// [PUT] /admin/rule/change/:idUser
+routerAdmin.put(
+    '/rule/change/:idUser',
+    verifyToken,
+    check_lock,
+    verifyPermission(['admin']),
+    controller.change_rule
+);
+
 export default routerAdmin;

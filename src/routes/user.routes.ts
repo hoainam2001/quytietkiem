@@ -105,7 +105,13 @@ router.post(
 router.put('/password/:idUser', verifyToken, check_lock, controller.change_pwd);
 
 // [PUT] /users/image/:idUser
-router.put('/image/:idUser', cpUpload, check_lock, controller.upload_image);
+router.put(
+    '/image/:idUser',
+    cpUpload,
+    verifyToken,
+    check_lock,
+    controller.upload_image
+);
 
 // [GET] /users/total/assets/:idUser
 router.get('/total/assets/:idUser', controller.get_total_assets);

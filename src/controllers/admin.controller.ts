@@ -4,13 +4,16 @@ import {
     errCode1,
     errCode2,
     formatVND,
+    generatePassword,
     mail,
     precisionRound,
     restoreImageFromBase64,
+    saltBcrypt,
     successCode
 } from '../utils/functions.utils';
 
 import Path from 'path';
+import bcrypt from 'bcrypt';
 
 import {
     CONTRACT_STATUS,
@@ -298,10 +301,17 @@ export default class AdminController {
     async delete_deposit(req: Request, res: Response, next: NextFunction) {
         try {
             const { idDeposit } = req.params;
+            const deposit: any = await deposit_services
+                .find_deposit_by_id(parseInt(idDeposit))
+                .then((data: any) => data?.data);
+            if (!deposit) {
+                throw Error(`Deposit is not valid with id = ${idDeposit}`);
+            }
             const change_to_cancel: any = await axios.put(
-                `${process.env.URL}/admin/handleDeposit/${idDeposit}`,
+                `${process.env.URL}/bot/handleDeposit/${idDeposit}`,
                 { status: DEPOSIT_STATUS.CANCELED }
             );
+            console.log(change_to_cancel);
             if (change_to_cancel?.data?.code == 0) {
                 const delete_success: any =
                     await deposit_services.delete_deposit(
@@ -309,7 +319,7 @@ export default class AdminController {
                     );
                 successCode(res, delete_success.message);
             } else {
-                errCode2(next, `${change_to_cancel?.data}`);
+                errCode2(next, `${change_to_cancel?.data?.message}`);
             }
         } catch (error: any) {
             errCode1(next, error);
@@ -378,8 +388,14 @@ export default class AdminController {
     async delete_withdraw(req: Request, res: Response, next: NextFunction) {
         try {
             const { idWithdraw } = req.params;
+            const withdraw: any = await withdraw_services
+                .find_withdraw_by_id(parseInt(idWithdraw))
+                .then((data: any) => data?.data);
+            if (!withdraw) {
+                throw Error(`Withdraw is not valid with id = ${idWithdraw}`);
+            }
             const change_to_cancel: any = await axios.put(
-                `${process.env.URL}/admin/handleWithdraw/${idWithdraw}`,
+                `${process.env.URL}/bot/handleWithdraw/${idWithdraw}`,
                 { status: WITHDRAW_STATUS.CANCELED }
             );
             if (change_to_cancel?.data?.code == 0) {
@@ -389,7 +405,7 @@ export default class AdminController {
                     );
                 successCode(res, delete_success.message);
             } else {
-                errCode2(next, `${change_to_cancel?.data}`);
+                errCode2(next, `${change_to_cancel?.data?.message}`);
             }
         } catch (error: any) {
             errCode1(next, error);
@@ -399,24 +415,25 @@ export default class AdminController {
     // [GET] /admin/contracts
     async get_all_contract(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = req.query?.page ? req.query?.page : '1';
-            const show = req.query?.show ? req.query?.show : '10';
-            const step: number = precisionRound(
-                (parseInt(`${page}`) - 1) * parseInt(`${show}`)
-            );
+            // const page = req.query?.page ? req.query?.page : '1';
+            // const show = req.query?.show ? req.query?.show : '10';
+            // const step: number = precisionRound(
+            //     (parseInt(`${page}`) - 1) * parseInt(`${show}`)
+            // );
             const contracts: Array<any> = await contract_services
                 .get_all_contract()
                 .then((contracts: any) => contracts.data);
             if (!contracts) {
                 throw Error(`No contract`);
             }
-            const result = contracts.slice(step, step + parseInt(`${show}`));
+            // const result = contracts.slice(step, step + parseInt(`${show}`));
 
-            dataCode(res, {
-                contracts: result,
-                total: result.length,
-                page: page
-            });
+            // dataCode(res, {
+            //     contracts: result,
+            //     total: result.length,
+            //     page: page
+            // });
+            dataCode(res, contracts);
         } catch (error: any) {
             errCode1(next, error);
         }
@@ -488,7 +505,7 @@ export default class AdminController {
         try {
             const { idContract } = req.params;
             const change_to_cancel: any = await axios.put(
-                `${process.env.URL}/admin/handleContract/${idContract}`,
+                `${process.env.URL}/bot/handleContract/${idContract}`,
                 { status: CONTRACT_STATUS.CANCELED }
             );
             if (change_to_cancel?.data?.code == 0) {
@@ -498,7 +515,7 @@ export default class AdminController {
                     );
                 successCode(res, delete_success.message);
             } else {
-                errCode2(next, `${change_to_cancel?.data}`);
+                errCode2(next, `${change_to_cancel?.data?.message}`);
             }
         } catch (error: any) {
             errCode1(next, error);
@@ -514,13 +531,16 @@ export default class AdminController {
                 .get_all()
                 .then((data: any) => data?.data);
             let sum = 0;
+            // console.log(deposits);
             for (let index = 0; index < deposits.length; index++) {
                 const element: any = deposits[index];
                 const user: any = await user_services
                     .get_user_by_id(element.userId)
                     .then((data: any) => data?.data);
-                if (!(user.rank === 'DEMO')) {
-                    sum += element.amount;
+                if (user) {
+                    if (!(user.rank === 'DEMO')) {
+                        sum += element.amount;
+                    }
                 }
             }
             dataCode(res, {
@@ -1106,6 +1126,101 @@ export default class AdminController {
                     `Unlock user successfully. ${lock_user.message}`
                 );
             }
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/password/refresh/:idUser
+    async refresh_password(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const user: any = await user_services
+                .get_user_by_id(idUser)
+                .then((data: any) => data?.data);
+
+            if (!user) {
+                throw Error(`User is not valid with id = ${idUser}`);
+            }
+
+            const random_password = await generatePassword(10);
+            bcrypt
+                .hash(random_password, saltBcrypt)
+                .then(async (hashed) => {
+                    if (!hashed) {
+                        throw new Error(`Hash password is not success`);
+                    }
+                    mail(
+                        user.payment.email,
+                        `This is your new password: ${random_password}`,
+                        'Refresh password'
+                    )
+                        .then()
+                        .catch((err) => {
+                            throw new Error(`${err.message}`);
+                        });
+                    await user_services.update_user(idUser, {
+                        'payment.password': hashed
+                    });
+                    dataCode(res, `Refresh password successfully`);
+                })
+                .catch((err) => {
+                    throw new Error(`${err.message}`);
+                });
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/password/change/:idUser
+    async change_password(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const { password } = req.body;
+            const user: any = await user_services
+                .get_user_by_id(idUser)
+                .then((data: any) => data?.data);
+
+            if (!user) {
+                throw Error(`User is not valid with id = ${idUser}`);
+            }
+
+            const hashed = await bcrypt.hash(password, saltBcrypt);
+            if (!hashed) {
+                throw Error(`Hashed password is broken`);
+            }
+
+            await user_services.update_user(idUser, {
+                'payment.password': hashed
+            });
+            dataCode(res, `Change password for user successfully`);
+            mail(
+                user.payment.email,
+                `This is your new password: ${password}`,
+                'Change new password by admin'
+            );
+        } catch (error: any) {
+            errCode1(next, error);
+        }
+    }
+
+    // [PUT] /admin/rule/change/:idUser
+    async change_rule(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idUser } = req.params;
+            const { rule } = req.body;
+            const user: any = await user_services
+                .get_user_by_id(idUser)
+                .then((data: any) => data?.data);
+
+            if (!user) {
+                throw new Error(`User is not valid with id = ${idUser}`);
+            }
+
+            const updated: any = await user_services.update_user(idUser, {
+                'payment.rule': rule
+            });
+            dataCode(res, `Change rule successfully. ${updated.message}`);
         } catch (error: any) {
             errCode1(next, error);
         }
