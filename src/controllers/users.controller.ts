@@ -465,7 +465,7 @@ class UserController {
                 const new_payment: any = await payment_services
                     .create_payment(data_input)
                     .then((data: any) => data?.data?.dataValues);
-                console.log(new_payment);
+                // console.log(new_payment);
                 const add_payment: any = await user_services.add_payment(
                     idUser,
                     {
@@ -652,9 +652,9 @@ class UserController {
                     principal *
                         precisionRound(parseFloat(period_interest) / 100 + 1)
                 );
-                console.log(
-                    precisionRound(parseFloat(period_interest) / 100 + 1)
-                );
+                // console.log(
+                //     precisionRound(parseFloat(period_interest) / 100 + 1)
+                // );
                 dataCode(res, {
                     disbursement, // Giải ngân
                     principal: principal, // Gốc

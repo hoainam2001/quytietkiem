@@ -311,7 +311,7 @@ export default class AdminController {
                 `${process.env.URL}/bot/handleDeposit/${idDeposit}`,
                 { status: DEPOSIT_STATUS.CANCELED }
             );
-            console.log(change_to_cancel);
+            // console.log(change_to_cancel);
             if (change_to_cancel?.data?.code == 0) {
                 const delete_success: any =
                     await deposit_services.delete_deposit(
@@ -544,7 +544,7 @@ export default class AdminController {
                 }
             }
             dataCode(res, {
-                sum: formatVND(sum),
+                sum: sum,
                 deposits
             });
         } catch (error: any) {
@@ -569,7 +569,7 @@ export default class AdminController {
                 }
             }
             dataCode(res, {
-                sum: formatVND(sum),
+                sum: sum,
                 withdraw
             });
         } catch (error: any) {

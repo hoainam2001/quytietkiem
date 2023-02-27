@@ -78,7 +78,7 @@ const handle_add_and_update = async (contract: any) => {
             logger.info(completed_update);
         } else {
             axios
-                .put(`${process.env.URL}/admin/handleContract/${id_contract}`, {
+                .put(`${process.env.URL}/bot/handleContract/${id_contract}`, {
                     status: CONTRACT_STATUS.COMPLETED
                 })
                 .then((result) => result.data)
